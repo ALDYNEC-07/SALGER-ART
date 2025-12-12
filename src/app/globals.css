@@ -68,6 +68,7 @@ body {
 
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
 }
 
 img {
@@ -166,62 +167,107 @@ h3 {
   position: relative;
   display: flex;
   align-items: center;
+  gap: var(--space-xs);
+  isolation: isolate;
 }
 
 .site-nav__checkbox {
-  display: none;
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .site-nav__toggle {
-  display: block;
+  position: relative;
+  z-index: 1400;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 2.5rem;
+  height: var(--header-height);
+  padding: 0;
   background: transparent;
   cursor: pointer;
+  color: #111111;
+  gap: 6px;
 }
 
 .site-nav__bar {
   display: block;
-  width: 2rem;
+  width: 2.3rem;
   height: 1.2px;
-  margin-block: 5px;
   background-color: currentColor;
 }
 
 .site-nav__list {
   list-style: none;
   margin: 0;
-  padding: var(--space-m) 0 var(--space-m);
-  position: absolute;
-  inset-inline: 0;
-  top: calc(var(--header-height));
-  background-color: rgba(255, 255, 255, 0.98);
-
-  display: none;
+  padding: 0;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-s);
+  justify-content: center;
+  gap: var(--space-2xl);
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 1300;
 }
 
 .site-nav__checkbox:checked + .site-nav__toggle + .site-nav__list {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .site-nav__link {
-  font-size: var(--fs-md);
+  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.9;
+  color: #111111;
+}
+
+body:has(#nav-toggle:checked) {
+  overflow: hidden;
 }
 @media (min-width: 768px) {
+  body {
+    overflow: auto;
+  }
+
   .site-nav__toggle {
     display: none;
   }
 
   .site-nav__list {
     position: static;
+    inset: auto;
     padding: 0;
     background: transparent;
+    backdrop-filter: none;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     gap: var(--space-l);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: none;
   }
 
   .site-nav__link {

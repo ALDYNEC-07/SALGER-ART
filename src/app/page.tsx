@@ -3,7 +3,14 @@
  Он показывает шапку, блок Hero, галерею, пример серии и манифест о проекте на одной странице.
  Он позволяет прокручивать страницу по якорям и переходить к нужному разделу без перезагрузки.
 */
+"use client";
+
+import { useState } from "react";
+
 export default function Home() {
+  /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <>
       {/* Общая шапка для всей одностраничной галереи */}
@@ -13,12 +20,15 @@ export default function Home() {
             <span>SALGER ART</span>
           </a>
 
+          {/* Основная навигация по разделам, открывается поверх контента на мобильных */}
           <nav className="site-nav" aria-label="Основная навигация">
             <input
               type="checkbox"
               id="nav-toggle"
               className="site-nav__checkbox"
               aria-hidden="true"
+              checked={menuOpen}
+              onChange={() => setMenuOpen((prev) => !prev)}
             />
             <label
               htmlFor="nav-toggle"
@@ -32,24 +42,37 @@ export default function Home() {
               <li className="site-nav__item">
                 {/* Активным оставляем первый пункт, без JS */}
                 <a
-                  className="site-nav__link "
+                  className="site-nav__link site-nav__link--active"
                   href="#hero"
+                  onClick={() => setMenuOpen(false)}
                 >
                   Главная
                 </a>
               </li>
               <li className="site-nav__item">
-                <a className="site-nav__link" href="#gallery">
+                <a
+                  className="site-nav__link"
+                  href="#gallery"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Галерея
                 </a>
               </li>
               <li className="site-nav__item">
-                <a className="site-nav__link" href="#series">
+                <a
+                  className="site-nav__link"
+                  href="#series"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Серии
                 </a>
               </li>
               <li className="site-nav__item">
-                <a className="site-nav__link" href="#about">
+                <a
+                  className="site-nav__link"
+                  href="#about"
+                  onClick={() => setMenuOpen(false)}
+                >
                   О проекте
                 </a>
               </li>

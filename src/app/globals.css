@@ -113,6 +113,8 @@ h3 {
 }
 
 .page {
+  /* Чуть опускаем якорные секции, чтобы шапка не прижимала контент */
+  scroll-margin-top: calc(var(--header-height) + var(--space-m));
   padding-block: clamp(3rem, 8vh, 4.5rem);
 }
 
@@ -342,7 +344,7 @@ body:has(#nav-toggle:checked) {
 .hero__media::after {
   content: "";
   position: absolute;
-  inset: var(--space-m);
+  inset: var(--space-xs);
   border-radius: inherit;
   background: radial-gradient(circle at 52% 46%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 70%);
   mix-blend-mode: screen;
@@ -351,7 +353,7 @@ body:has(#nav-toggle:checked) {
 
 .hero__media-note {
   position: absolute;
-  inset: var(--space-m);
+  inset: var(--space-xs);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,7 +387,7 @@ body:has(#nav-toggle:checked) {
 }
 
 .hero__title {
-  margin: 0;
+  margin: clamp(1rem, 2.6vw, 1.6rem) 0 0;
   font-size: clamp(2.25rem, 4vw, 3.4rem);
   line-height: 1.05;
   letter-spacing: -0.01em;

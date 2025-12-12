@@ -6,12 +6,19 @@
 "use client";
 
 import { useState } from "react";
-import { Manrope } from "next/font/google";
+import Image from "next/image";
+import localFont from "next/font/local";
 
-/* Загружаем шрифт для логотипа, чтобы он отличался от остального текста */
-const manrope = Manrope({
-  subsets: ["latin", "cyrillic"],
-  weight: "600",
+/* Подключаем акцентный шрифт из локальной копии, чтобы сборка не зависела от сети */
+const manrope = localFont({
+  src: [
+    {
+      path: "../../public/fonts/manrope-600.ttf",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  display: "swap",
 });
 
 export default function Home() {
@@ -25,6 +32,7 @@ export default function Home() {
         <div className="container site-header__inner">
           {/* Логотип возвращает к верхней части страницы и визуально задаёт бренд */}
           <a href="#hero" className="site-logo">
+            {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
             <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
           </a>
 
@@ -99,7 +107,14 @@ export default function Home() {
                 <div className="hero__media" aria-hidden="true">
                   {/* Логотип проекта в центре рамки, чтобы напомнить о бренде */}
                   <div className="hero__media-note">
-                    <img src="/Logo.png" alt="Логотип SALGER ART" />
+                    <Image
+                      src="/Logo.png"
+                      alt="Логотип SALGER ART"
+                      fill
+                      sizes="(max-width: 768px) 92vw, 640px"
+                      priority
+                      className="hero__logo"
+                    />
                   </div>
                 </div>
 

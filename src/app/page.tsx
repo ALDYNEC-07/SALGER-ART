@@ -6,6 +6,13 @@
 "use client";
 
 import { useState } from "react";
+import { Manrope } from "next/font/google";
+
+/* Загружаем шрифт для логотипа, чтобы он отличался от остального текста */
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  weight: "600",
+});
 
 export default function Home() {
   /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
@@ -16,8 +23,9 @@ export default function Home() {
       {/* Общая шапка для всей одностраничной галереи */}
       <header className="site-header">
         <div className="container site-header__inner">
+          {/* Логотип возвращает к верхней части страницы и визуально задаёт бренд */}
           <a href="#hero" className="site-logo">
-            <span>SALGER ART</span>
+            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
           </a>
 
           {/* Основная навигация по разделам, открывается поверх контента на мобильных */}

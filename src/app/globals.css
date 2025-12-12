@@ -68,6 +68,8 @@ body {
 
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 img {
@@ -111,6 +113,8 @@ h3 {
 }
 
 .page {
+  /* Чуть опускаем якорные секции, чтобы шапка не прижимала контент */
+  scroll-margin-top: calc(var(--header-height) + var(--space-m));
   padding-block: clamp(3rem, 8vh, 4.5rem);
 }
 
@@ -151,12 +155,13 @@ h3 {
 
 .site-logo {
   font-size: var(--fs-md);
-  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.site-logo span {
+.site-logo__text {
+  display: inline-block;
+  letter-spacing: 0.18em;
   font-weight: 600;
 }
 
@@ -166,79 +171,107 @@ h3 {
   position: relative;
   display: flex;
   align-items: center;
+  gap: var(--space-xs);
+  isolation: isolate;
 }
 
 .site-nav__checkbox {
-  display: none;
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .site-nav__toggle {
-  display: block;
+  position: relative;
+  z-index: 1400;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 2.5rem;
+  height: var(--header-height);
+  padding: 0;
   background: transparent;
   cursor: pointer;
+  color: #111111;
+  gap: 6px;
 }
 
 .site-nav__bar {
   display: block;
-  width: 2rem;
+  width: 2.3rem;
   height: 1.2px;
-  margin-block: 5px;
   background-color: currentColor;
 }
 
 .site-nav__list {
   list-style: none;
   margin: 0;
-  padding: var(--space-m) 0 var(--space-m);
-  position: absolute;
-  inset-inline: 0;
-  top: calc(var(--header-height));
-  background-color: rgba(255, 255, 255, 0.98);
-
-  display: none;
+  padding: 0;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-s);
+  justify-content: center;
+  gap: var(--space-2xl);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+	background: rgba(255, 255, 255, 0.950);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 1300;
 }
 
 .site-nav__checkbox:checked + .site-nav__toggle + .site-nav__list {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .site-nav__link {
-  font-size: var(--fs-md);
+  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.9;
+  color: #111;
 }
 
-.site-nav__link--active {
-  position: relative;
+body:has(#nav-toggle:checked) {
+  overflow: hidden;
 }
-
-.site-nav__link--active::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -0.25rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background-color: currentColor;
-}
-
 @media (min-width: 768px) {
+  body {
+    overflow: auto;
+  }
+
   .site-nav__toggle {
     display: none;
   }
 
   .site-nav__list {
     position: static;
+    inset: auto;
     padding: 0;
     background: transparent;
+    backdrop-filter: none;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     gap: var(--space-l);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: none;
   }
 
   .site-nav__link {
@@ -292,55 +325,78 @@ h3 {
 .hero__layout {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: clamp(1.25rem, 3vw, 2.25rem);
 }
 
 .hero__media {
   position: relative;
   border-radius: 1.5rem;
-  min-height: 16rem;
+  min-height: 14.25rem;
   overflow: hidden;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.72), rgba(245, 245, 245, 0) 62%),
+    linear-gradient(135deg, #f9f9f7, #efefec);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 
   /* Лёгкий zoom-in для ключевого визуала */
   animation: heroZoom 18s ease-out forwards;
 }
 
-.hero__media::before {
+.hero__media::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-color: #e5e5e5; /* плоский нейтральный фон-заглушка */
+  inset: var(--space-xs);
+  border-radius: inherit;
+  background: radial-gradient(circle at 52% 46%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 70%);
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
 
 .hero__media-note {
   position: absolute;
-  inset-inline: var(--space-m);
-  bottom: var(--space-m);
-  font-size: var(--fs-xs);
-  opacity: 0.75;
+  inset: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  border-radius: inherit;
+}
+
+.hero__media-note img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 .hero__content {
+  --hero-content-shift: 0;
   max-width: 32rem;
+  display: grid;
+  gap: clamp(0.35rem, 1vw, 0.6rem);
+  align-self: flex-start;
   animation: heroFade 1.4s ease-out both;
 }
 
 .hero__eyebrow {
-  margin: 0 0 var(--space-s);
-  font-size: var(--fs-sm);
-  letter-spacing: 0.18em;
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.58);
 }
 
 .hero__title {
-  margin: 0 0 var(--space-s);
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  line-height: 1.1;
+  margin: clamp(1rem, 2.6vw, 1.6rem) 0 0;
+  font-size: clamp(2.25rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
 }
 
 .hero__subtitle {
-  margin: 0;
-  font-size: var(--fs-md);
+  margin: clamp(0.3rem, 0.9vw, 0.55rem) 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  color: rgba(17, 17, 17, 0.7);
   max-width: 26rem;
 }
 
@@ -350,6 +406,7 @@ h3 {
   margin-top: auto;
   display: flex;
   justify-content: center;
+  transform: translateY(50px);
 }
 
 .hero__scroll-link {
@@ -400,11 +457,11 @@ h3 {
 @keyframes heroFade {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(calc(var(--hero-content-shift, 0) + 10px));
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(var(--hero-content-shift, 0));
   }
 }
 
@@ -419,23 +476,27 @@ h3 {
 
   .hero__media {
     flex: 3;
-    min-height: 22rem;
+    min-height: 20.5rem;
   }
 
   .hero__content {
     flex: 2;
-    max-width: 28rem;
+    max-width: 30rem;
     order: -1; /* текст слева, визуал справа */
+    align-self: center;
+    padding-top: clamp(0.5rem, 1vw, 1rem);
+    --hero-content-shift: 2%;
   }
 }
 
 @media (min-width: 1024px) {
   .hero__media {
-    min-height: 28rem;
+    min-height: 26rem;
   }
 
   .hero__content {
     max-width: 32rem;
+    --hero-content-shift: 4%;
   }
 }
 

@@ -95,15 +95,15 @@ export default function Home() {
           <div className="hero">
             <div className="hero__inner">
               <div className="hero__layout">
-                {/* Ключевой визуальный hero-элемент (заглушка под полотно) */}
+                {/* Ключевой визуальный блок с рамкой под арт и мягким сиянием */}
                 <div className="hero__media" aria-hidden="true">
-                  {/* Логотип проекта, закреплённый внизу визуального блока */}
+                  {/* Логотип проекта в центре рамки, чтобы напомнить о бренде */}
                   <div className="hero__media-note">
                     <img src="/Logo.png" alt="Логотип SALGER ART" />
                   </div>
                 </div>
 
-                {/* Слоган / H1 */}
+                {/* Слоган и главный заголовок, совмещённые с центром визуала, когда блоки стоят рядом */}
                 <div className="hero__content">
                   <p className="hero__eyebrow">Онлайн-галерея цифрового искусства</p>
                   <h1 id="hero-title" className="hero__title">

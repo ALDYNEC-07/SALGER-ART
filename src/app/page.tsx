@@ -89,8 +89,9 @@ export default function Home() {
               <div className="hero__layout">
                 {/* Ключевой визуальный hero-элемент (заглушка под полотно) */}
                 <div className="hero__media" aria-hidden="true">
+                  {/* Логотип проекта, закреплённый внизу визуального блока */}
                   <div className="hero__media-note">
-                    Ключевое цифровое полотно автора (Hero-изображение)
+                    <img src="/Logo.png" alt="Логотип SALGER ART" />
                   </div>
                 </div>
 

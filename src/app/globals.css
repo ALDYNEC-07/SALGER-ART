@@ -69,6 +69,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 img {
@@ -209,7 +210,7 @@ h3 {
   padding: 0;
   position: fixed;
   inset: 0;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -334,19 +335,22 @@ body:has(#nav-toggle:checked) {
   animation: heroZoom 18s ease-out forwards;
 }
 
-.hero__media::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: #e5e5e5; /* плоский нейтральный фон-заглушка */
-}
-
 .hero__media-note {
   position: absolute;
-  inset-inline: var(--space-m);
-  bottom: var(--space-m);
-  font-size: var(--fs-xs);
-  opacity: 0.75;
+  inset: var(--space-m);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  border-radius: inherit;
+}
+
+.hero__media-note img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 .hero__content {

@@ -404,6 +404,7 @@ body:has(#nav-toggle:checked) {
   margin-top: auto;
   display: flex;
   justify-content: center;
+  transform: translateY(50px);
 }
 
 .hero__scroll-link {

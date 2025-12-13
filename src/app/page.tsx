@@ -30,12 +30,16 @@ export default function Home() {
   /* Следим, какая карточка сейчас в центре, чтобы подсвечивать её среди остальных */
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   /* Учитываем запрос пользователя на минимальное движение */
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
-  /* При загрузке проверяем запрос на уменьшение анимаций и обновляем его при изменении настроек */
+  /* Следим за изменениями системного запроса на уменьшение анимаций */
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleMotionChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);

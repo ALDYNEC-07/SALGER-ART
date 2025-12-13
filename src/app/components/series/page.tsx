@@ -8,11 +8,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
-import krugImage from "../assets/Krug.jpg";
-import lineImage from "../assets/Line.png";
-import scenaImage from "../assets/Scena.jpg";
+import krugImage from "../../assets/Krug.jpg";
+import lineImage from "../../assets/Line.png";
+import scenaImage from "../../assets/Scena.jpg";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
-import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
+import { SiteHeader, type SiteNavItem } from "../SiteHeader";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы с сериями: активным остаётся раздел «Серии» */

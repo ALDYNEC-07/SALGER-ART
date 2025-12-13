@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { manrope } from "../src/fonts/manrope";
+import { manrope } from "../../fonts/manrope";
 
 export type SiteNavItem = {
   label: string;

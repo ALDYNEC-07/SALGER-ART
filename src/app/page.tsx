@@ -11,7 +11,7 @@ import Image from "next/image";
 /* Данные галереи вынесены в отдельный файл, чтобы пополнять их без правки компонента */
 import { gallerySeries } from "../data/gallerySeries";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
-import { SiteHeader, type SiteNavItem } from "../../components/SiteHeader";
+import { SiteHeader, type SiteNavItem } from "./components/SiteHeader";
 
 export default function Home() {
   /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */

@@ -9,11 +9,8 @@ import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import localFont from "next/font/local";
-import krugImage from "./assets/Krug.jpg";
-import lineImage from "./assets/Line.png";
-import scenaImage from "./assets/Scena.jpg";
-import idealLineImage from "./assets/Ideal-line.jpg";
-import yaycoImage from "./assets/Yayco.jpg";
+/* Данные галереи вынесены в отдельный файл, чтобы пополнять их без правки компонента */
+import { gallerySeries } from "../data/gallerySeries";
 
 /* Подключаем акцентный шрифт из локальной копии, чтобы сборка не зависела от сети */
 const manrope = localFont({
@@ -30,39 +27,8 @@ const manrope = localFont({
 export default function Home() {
   /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
   const [menuOpen, setMenuOpen] = useState(false);
-  /* Список серий для превью: название, описание и картинка из assets */
-  const gallerySeries = [
-    {
-      title: "Полярная сцена",
-      meta: "Холодный свет прожекторов и лёгкая дымка, будто северное сияние на сцене.",
-      image: scenaImage,
-      alt: "Картина из серии «Полярная сцена»: прожекторы подсвечивают пространство на темном фоне",
-    },
-    {
-      title: "Тихий город",
-      meta: "Ровные линии неона, которые остались после ночного движения.",
-      image: lineImage,
-      alt: "Картина из серии «Тихий город»: световые линии неона на тёмном фоне",
-    },
-    {
-      title: "Круг дыхания",
-      meta: "Мягкие кольца цвета, собирающие взгляд в спокойный центр.",
-      image: krugImage,
-      alt: "Картина из серии «Круг дыхания»: кольца цвета на нейтральном фоне",
-    },
-    {
-      title: "Идеальная линия",
-      meta: "Единственная линия света держит равновесие кадра и задаёт ритм.",
-      image: idealLineImage,
-      alt: "Картина из серии «Идеальная линия»: тонкая линия света на темном фоне",
-    },
-    {
-      title: "Рассветные краски",
-      meta: "Тёплая палитра раннего утра и мягкие переходы цвета.",
-      image: yaycoImage,
-      alt: "Картина из серии «Рассветные краски»: тёплые плавные формы в мягком свете",
-    },
-  ];
+  /* Список серий для превью берём из базы данных в папке data, чтобы данные жили отдельно от разметки */
+  const gallerySeriesPreview = gallerySeries;
   /* Запоминаем карточки галереи, чтобы знать, куда скроллить и кого выделять */
   const galleryCardRefs = useRef<HTMLElement[]>([]);
   /* Запоминаем контейнер галереи, который скроллится по горизонтали */
@@ -305,7 +271,7 @@ export default function Home() {
             onKeyDown={handleGalleryKeyDown}
             tabIndex={0}
           >
-            {gallerySeries.map((series, index) => (
+            {gallerySeriesPreview.map((series, index) => (
               <article
                 key={series.title}
                 className="series-card"

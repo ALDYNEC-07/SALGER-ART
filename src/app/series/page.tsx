@@ -8,22 +8,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
-import localFont from "next/font/local";
 import krugImage from "../assets/Krug.jpg";
 import lineImage from "../assets/Line.png";
 import scenaImage from "../assets/Scena.jpg";
-
-/* Подключаем акцентный шрифт для логотипа, чтобы он выглядел так же, как на главной */
-const manrope = localFont({
-  src: [
-    {
-      path: "../../../public/fonts/manrope-600.ttf",
-      weight: "600",
-      style: "normal",
-    },
-  ],
-  display: "swap",
-});
+/* Акцентный шрифт Manrope берём из общего файла, чтобы логотип был единым на всех страницах */
+import { manrope } from "../../fonts/manrope";
 
 export default function SeriesPage() {
   /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */

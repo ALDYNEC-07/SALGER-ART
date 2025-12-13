@@ -8,21 +8,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
-import localFont from "next/font/local";
 /* Данные галереи вынесены в отдельный файл, чтобы пополнять их без правки компонента */
 import { gallerySeries } from "../data/gallerySeries";
-
-/* Подключаем акцентный шрифт из локальной копии, чтобы сборка не зависела от сети */
-const manrope = localFont({
-  src: [
-    {
-      path: "../../public/fonts/manrope-600.ttf",
-      weight: "600",
-      style: "normal",
-    },
-  ],
-  display: "swap",
-});
+/* Акцентный шрифт Manrope подключаем из отдельного файла, чтобы не дублировать настройку */
+import { manrope } from "../fonts/manrope";
 
 export default function Home() {
   /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */

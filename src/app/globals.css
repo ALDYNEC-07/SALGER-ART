@@ -548,7 +548,8 @@ body:has(#nav-toggle:checked) {
   overflow: hidden;
 }
 
-.series-list__grid {
+.series-list__grid,
+.series-works__rail {
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
@@ -565,20 +566,25 @@ body:has(#nav-toggle:checked) {
 }
 
 .series-list__grid::before,
-.series-list__grid::after {
+.series-list__grid::after,
+.series-works__rail::before,
+.series-works__rail::after {
   content: "";
   flex: 0 0 calc((100% - clamp(260px, 70vw, 520px)) / 2);
 }
 
-.series-list__grid::-webkit-scrollbar {
+.series-list__grid::-webkit-scrollbar,
+.series-works__rail::-webkit-scrollbar {
   height: 8px;
 }
 
-.series-list__grid::-webkit-scrollbar-track {
+.series-list__grid::-webkit-scrollbar-track,
+.series-works__rail::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.series-list__grid::-webkit-scrollbar-thumb {
+.series-list__grid::-webkit-scrollbar-thumb,
+.series-works__rail::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.16);
   border-radius: 999px;
 }
@@ -662,7 +668,8 @@ body:has(#nav-toggle:checked) {
     scroll-behavior: auto;
   }
 
-  .series-list__grid {
+  .series-list__grid,
+  .series-works__rail {
     scroll-behavior: auto;
   }
 
@@ -711,27 +718,11 @@ body:has(#nav-toggle:checked) {
 }
 
 .series-works {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3xl);
+  overflow: visible;
 }
 
-.series-work__figure {
-  margin: 0;
-}
-
-.series-work__media {
-  position: relative;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  min-height: 14rem;
-  background-color: #e5e5e5;
-}
-
-.series-work__caption {
-  margin-top: var(--space-xs);
-  font-size: var(--fs-xs);
-  color: #555555;
+.page--series .series-card__meta {
+  color: #444444;
 }
 
 /* Завершение серии */

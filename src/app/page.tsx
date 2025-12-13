@@ -1,6 +1,6 @@
 /* 
  Этот файл собирает всю одностраничную галерею в Next.js.
- Он показывает шапку, блок Hero, галерею, пример серии и манифест о проекте на одной странице.
+ Он показывает шапку, блок Hero, галерею серий и манифест о проекте на одной странице.
  Он позволяет прокручивать страницу по якорям и переходить к нужному разделу без перезагрузки.
 */
 "use client";
@@ -219,7 +219,7 @@ export default function Home() {
               <li className="site-nav__item">
                 <a
                   className="site-nav__link"
-                  href="#series"
+                  href="/series"
                   onClick={() => setMenuOpen(false)}
                 >
                   Серии
@@ -305,29 +305,29 @@ export default function Home() {
             onKeyDown={handleGalleryKeyDown}
             tabIndex={0}
           >
-          {gallerySeries.map((series, index) => (
-            <article
-              key={series.title}
-              className="series-card"
-              ref={(node) => {
-                if (node) {
-                  galleryCardRefs.current[index] = node;
-                }
-              }}
-              /* При наведении сразу отмечаем карточку активной, чтобы выбранная не оставалась размытой */
-              onMouseEnter={() => setActiveCardIndex(index)}
-            >
-              <a
-                href="#series"
-                className="series-card__link"
-                /* При фокусе через клавиатуру тоже снимаем размытие с выбранной карточки */
-                onFocus={() => setActiveCardIndex(index)}
+            {gallerySeries.map((series, index) => (
+              <article
+                key={series.title}
+                className="series-card"
+                ref={(node) => {
+                  if (node) {
+                    galleryCardRefs.current[index] = node;
+                  }
+                }}
+                /* При наведении сразу отмечаем карточку активной, чтобы выбранная не оставалась размытой */
+                onMouseEnter={() => setActiveCardIndex(index)}
               >
-                <figure className="series-card__figure">
-                  <div className="series-card__image-placeholder">
-                    <Image
-                      src={series.image}
-                      alt={series.alt}
+                <a
+                  href="/series"
+                  className="series-card__link"
+                  /* При фокусе через клавиатуру тоже снимаем размытие с выбранной карточки */
+                  onFocus={() => setActiveCardIndex(index)}
+                >
+                  <figure className="series-card__figure">
+                    <div className="series-card__image-placeholder">
+                      <Image
+                        src={series.image}
+                        alt={series.alt}
                         fill
                         sizes="(max-width: 640px) 80vw, (max-width: 1200px) 46vw, 520px"
                         className="series-card__image"
@@ -342,66 +342,6 @@ export default function Home() {
                 </a>
               </article>
             ))}
-          </div>
-        </section>
-
-        {/* ===================== Страница серии (пример) ===================== */}
-        <section
-          id="series"
-          className="page page--series"
-          aria-labelledby="series-title"
-        >
-          <div className="container">
-            {/* Хлебные крошки внутри одной страницы, но с якорями */}
-            <nav className="breadcrumbs" aria-label="Хлебные крошки">
-              <a href="#gallery">Галерея</a>
-              <span> / </span>
-              <span aria-current="page">Северное сияние</span>
-            </nav>
-
-            <header className="series-header">
-              <h1 id="series-title" className="series-header__title">
-                Северное сияние
-              </h1>
-              <p className="series-header__meta">Серия цифровых работ, 2024</p>
-              <p className="series-header__intro">
-                Короткий манифест серии: одна–две строки о настроении и идее,
-                без длинных описаний.
-              </p>
-            </header>
-
-            {/* Вертикальная колонка работ с "воздухом" между ними */}
-            <div className="series-works">
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true">
-                  {/* Здесь будет конкретное изображение работы */}
-                </div>
-                <figcaption className="series-work__caption">
-                  «Полярная тишина», 2024, цифровое полотно.
-                </figcaption>
-              </figure>
-
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true"></div>
-                <figcaption className="series-work__caption">
-                  «Свет за горизонтом», 2024.
-                </figcaption>
-              </figure>
-
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true"></div>
-                <figcaption className="series-work__caption">
-                  «Медленное свечение», 2024.
-                </figcaption>
-              </figure>
-            </div>
-
-            {/* Завершение серии и навигация */}
-            <div className="series-footer">
-              <a href="#gallery">←</a>
-              {/* Пока просто ссылка на ту же серию как заглушка для "следующей" */}
-              <a href="#series">→</a>
-            </div>
           </div>
         </section>
 

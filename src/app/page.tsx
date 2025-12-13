@@ -12,6 +12,8 @@ import localFont from "next/font/local";
 import krugImage from "./assets/Krug.jpg";
 import lineImage from "./assets/Line.png";
 import scenaImage from "./assets/Scena.jpg";
+import idealLineImage from "./assets/Ideal-line.jpg";
+import yaycoImage from "./assets/Yayco.jpg";
 
 /* Подключаем акцентный шрифт из локальной копии, чтобы сборка не зависела от сети */
 const manrope = localFont({
@@ -31,22 +33,34 @@ export default function Home() {
   /* Список серий для превью: название, описание и картинка из assets */
   const gallerySeries = [
     {
-      title: "Северное сияние",
-      meta: "Холодный свет, тишина северной ночи.",
+      title: "Полярная сцена",
+      meta: "Холодный свет прожекторов и лёгкая дымка, будто северное сияние на сцене.",
       image: scenaImage,
-      alt: "Картина из серии «Северное сияние»: мягкое сияние на темном фоне",
+      alt: "Картина из серии «Полярная сцена»: прожекторы подсвечивают пространство на темном фоне",
     },
     {
-      title: "Город без шума",
-      meta: "Пустые улицы мегаполиса и мягкий свет экранов.",
+      title: "Тихий город",
+      meta: "Ровные линии неона, которые остались после ночного движения.",
       image: lineImage,
-      alt: "Картина из серии «Город без шума»: линии света на тёмном фоне",
+      alt: "Картина из серии «Тихий город»: световые линии неона на тёмном фоне",
     },
     {
-      title: "Вдох в пустоте",
-      meta: "Абстрактные композиции для созерцательного взгляда.",
+      title: "Круг дыхания",
+      meta: "Мягкие кольца цвета, собирающие взгляд в спокойный центр.",
       image: krugImage,
-      alt: "Картина из серии «Вдох в пустоте»: кольца цвета на нейтральном фоне",
+      alt: "Картина из серии «Круг дыхания»: кольца цвета на нейтральном фоне",
+    },
+    {
+      title: "Идеальная линия",
+      meta: "Единственная линия света держит равновесие кадра и задаёт ритм.",
+      image: idealLineImage,
+      alt: "Картина из серии «Идеальная линия»: тонкая линия света на темном фоне",
+    },
+    {
+      title: "Рассветные краски",
+      meta: "Тёплая палитра раннего утра и мягкие переходы цвета.",
+      image: yaycoImage,
+      alt: "Картина из серии «Рассветные краски»: тёплые плавные формы в мягком свете",
     },
   ];
   /* Запоминаем карточки галереи, чтобы знать, куда скроллить и кого выделять */
@@ -278,7 +292,7 @@ export default function Home() {
                 Галерея
               </h1>
               <p className="page-intro">
-                Выберите серию работ, чтобы погрузиться в отдельный цифровой зал.
+                Выберите серию — и войдите в отдельный зал.
               </p>
             </header>
           </div>
@@ -287,10 +301,10 @@ export default function Home() {
           <div
             className="series-list__grid"
             aria-label="Список серий"
-          ref={galleryListRef}
-          onKeyDown={handleGalleryKeyDown}
-          tabIndex={0}
-        >
+            ref={galleryListRef}
+            onKeyDown={handleGalleryKeyDown}
+            tabIndex={0}
+          >
           {gallerySeries.map((series, index) => (
             <article
               key={series.title}

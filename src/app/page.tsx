@@ -90,6 +90,12 @@ export default function Home() {
   const galleryListRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка сейчас в центре, чтобы подсвечивать её среди остальных */
   const [activeCardIndex, setActiveCardIndex] = useState(0);
+  /* Запоминаем карточки внутри выбранной серии, чтобы подсветить нужную */
+  const seriesCardRefs = useRef<HTMLElement[]>([]);
+  /* Горизонтальная полоса для карточек серии, чтобы ловить пересечения и клавиши */
+  const seriesListRef = useRef<HTMLDivElement | null>(null);
+  /* Следим, какая карточка серии выбрана прямо сейчас */
+  const [activeSeriesCardIndex, setActiveSeriesCardIndex] = useState(0);
   /* Учитываем запрос пользователя на минимальное движение */
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -154,6 +160,43 @@ export default function Home() {
     });
   }, [activeCardIndex]);
 
+  /* Отмечаем центральную карточку серии и подсвечиваем её среди соседних */
+  useEffect(() => {
+    if (!seriesListRef.current || seriesCardRefs.current.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const index = seriesCardRefs.current.indexOf(entry.target as HTMLElement);
+            if (index >= 0) {
+              setActiveSeriesCardIndex(index);
+            }
+          }
+        });
+      },
+      {
+        root: seriesListRef.current,
+        threshold: 0.6,
+      }
+    );
+
+    seriesCardRefs.current.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
+
+  /* Включаем размытие для соседних карточек серии, оставляя выбранную чёткой */
+  useEffect(() => {
+    seriesCardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      card.classList.toggle("is-active", index === activeSeriesCardIndex);
+      card.classList.toggle("is-dim", index !== activeSeriesCardIndex);
+    });
+  }, [activeSeriesCardIndex]);
+
   /* Прокрутка к нужной карточке влево/вправо с учётом предпочтений по анимации */
   const scrollToCard = (nextIndex: number) => {
     const targetCard = galleryCardRefs.current[nextIndex];
@@ -185,6 +228,40 @@ export default function Home() {
       event.preventDefault();
       const prevIndex = Math.max(activeCardIndex - 1, 0);
       scrollToCard(prevIndex);
+    }
+  };
+
+  /* Прокрутка по карточкам серии с учётом предпочтений по анимации */
+  const scrollToSeriesCard = (nextIndex: number) => {
+    const targetCard = seriesCardRefs.current[nextIndex];
+    if (!targetCard) return;
+
+    targetCard.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  };
+
+  /* Стрелки двигают полосу серии, чтобы выбрать нужную работу */
+  const handleSeriesKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!seriesCardRefs.current.length) {
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      const nextIndex = Math.min(
+        activeSeriesCardIndex + 1,
+        seriesCardRefs.current.length - 1
+      );
+      scrollToSeriesCard(nextIndex);
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      const prevIndex = Math.max(activeSeriesCardIndex - 1, 0);
+      scrollToSeriesCard(prevIndex);
     }
   };
 
@@ -326,29 +403,29 @@ export default function Home() {
             onKeyDown={handleGalleryKeyDown}
             tabIndex={0}
           >
-          {gallerySeries.map((series, index) => (
-            <article
-              key={series.title}
-              className="series-card"
-              ref={(node) => {
-                if (node) {
-                  galleryCardRefs.current[index] = node;
-                }
-              }}
-              /* При наведении сразу отмечаем карточку активной, чтобы выбранная не оставалась размытой */
-              onMouseEnter={() => setActiveCardIndex(index)}
-            >
-              <a
-                href="#series"
-                className="series-card__link"
-                /* При фокусе через клавиатуру тоже снимаем размытие с выбранной карточки */
-                onFocus={() => setActiveCardIndex(index)}
+            {gallerySeries.map((series, index) => (
+              <article
+                key={series.title}
+                className="series-card"
+                ref={(node) => {
+                  if (node) {
+                    galleryCardRefs.current[index] = node;
+                  }
+                }}
+                /* При наведении сразу отмечаем карточку активной, чтобы выбранная не оставалась размытой */
+                onMouseEnter={() => setActiveCardIndex(index)}
               >
-                <figure className="series-card__figure">
-                  <div className="series-card__image-placeholder">
-                    <Image
-                      src={series.image}
-                      alt={series.alt}
+                <a
+                  href="#series"
+                  className="series-card__link"
+                  /* При фокусе через клавиатуру тоже снимаем размытие с выбранной карточки */
+                  onFocus={() => setActiveCardIndex(index)}
+                >
+                  <figure className="series-card__figure">
+                    <div className="series-card__image-placeholder">
+                      <Image
+                        src={series.image}
+                        alt={series.alt}
                         fill
                         sizes="(max-width: 640px) 80vw, (max-width: 1200px) 46vw, 520px"
                         className="series-card__image"
@@ -391,33 +468,53 @@ export default function Home() {
               </p>
             </header>
 
-            {/* Сетка карточек серии с тем же визуалом, что и в галерее */}
-            <div
-              className="series-works"
-              aria-label="Работы серии «Северное сияние»"
-            >
-              {seriesWorks.map((work, index) => (
-                <article key={work.title} className="series-card series-card--stacked">
-                  <div className="series-card__link">
-                    <figure className="series-card__figure">
-                      <div className="series-card__image-placeholder">
-                        <Image
-                          src={work.image}
-                          alt={work.alt}
-                          fill
-                          sizes="(max-width: 640px) 92vw, (max-width: 1200px) 48vw, 420px"
-                          className="series-card__image"
-                          priority={index === 0}
-                        />
-                      </div>
-                      <figcaption className="series-card__caption">
-                        <h2 className="series-card__title">{work.title}</h2>
-                        <p className="series-card__meta">{work.meta}</p>
-                      </figcaption>
-                    </figure>
-                  </div>
-                </article>
-              ))}
+            {/* Полоса карточек серии на всю ширину экрана с теми же эффектами, что в галерее */}
+            <div className="series-works">
+              <div
+                className="series-works__rail"
+                aria-label="Работы серии «Северное сияние»"
+                ref={seriesListRef}
+                onKeyDown={handleSeriesKeyDown}
+                tabIndex={0}
+              >
+                {seriesWorks.map((work, index) => (
+                  <article
+                    key={work.title}
+                    className="series-card"
+                    ref={(node) => {
+                      if (node) {
+                        seriesCardRefs.current[index] = node;
+                      }
+                    }}
+                    /* При наведении снимаем размытие с выбранной карточки серии */
+                    onMouseEnter={() => setActiveSeriesCardIndex(index)}
+                  >
+                    <a
+                      href="#series"
+                      className="series-card__link"
+                      /* При фокусе через клавиатуру также делаем карточку чёткой */
+                      onFocus={() => setActiveSeriesCardIndex(index)}
+                    >
+                      <figure className="series-card__figure">
+                        <div className="series-card__image-placeholder">
+                          <Image
+                            src={work.image}
+                            alt={work.alt}
+                            fill
+                            sizes="(max-width: 640px) 92vw, (max-width: 1200px) 48vw, 420px"
+                            className="series-card__image"
+                            priority={index === 0}
+                          />
+                        </div>
+                        <figcaption className="series-card__caption">
+                          <h2 className="series-card__title">{work.title}</h2>
+                          <p className="series-card__meta">{work.meta}</p>
+                        </figcaption>
+                      </figure>
+                    </a>
+                  </article>
+                ))}
+              </div>
             </div>
 
             {/* Завершение серии и навигация */}

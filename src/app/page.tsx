@@ -63,6 +63,27 @@ export default function Home() {
       alt: "Картина из серии «Рассветные краски»: тёплые плавные формы в мягком свете",
     },
   ];
+  /* Работы выбранной серии с теми же карточками, что и в галерее */
+  const seriesWorks = [
+    {
+      title: "Полярная тишина",
+      meta: "Холодное свечение, будто северное сияние застыло в кадре.",
+      image: scenaImage,
+      alt: "Полотно «Полярная тишина»: мягкий свет прожекторов на тёмном фоне",
+    },
+    {
+      title: "Ночная грань",
+      meta: "Ровные линии неона, которые держат пространство в равновесии.",
+      image: lineImage,
+      alt: "Полотно «Ночная грань»: тонкие полосы неона на тёмном фоне",
+    },
+    {
+      title: "Тёплый круг",
+      meta: "Плавный круг цвета, который собирает взгляд в одну точку.",
+      image: krugImage,
+      alt: "Полотно «Тёплый круг»: кольца света на нейтральном фоне",
+    },
+  ];
   /* Запоминаем карточки галереи, чтобы знать, куда скроллить и кого выделять */
   const galleryCardRefs = useRef<HTMLElement[]>([]);
   /* Запоминаем контейнер галереи, который скроллится по горизонтали */
@@ -370,30 +391,33 @@ export default function Home() {
               </p>
             </header>
 
-            {/* Вертикальная колонка работ с "воздухом" между ними */}
-            <div className="series-works">
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true">
-                  {/* Здесь будет конкретное изображение работы */}
-                </div>
-                <figcaption className="series-work__caption">
-                  «Полярная тишина», 2024, цифровое полотно.
-                </figcaption>
-              </figure>
-
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true"></div>
-                <figcaption className="series-work__caption">
-                  «Свет за горизонтом», 2024.
-                </figcaption>
-              </figure>
-
-              <figure className="series-work__figure">
-                <div className="series-work__media" aria-hidden="true"></div>
-                <figcaption className="series-work__caption">
-                  «Медленное свечение», 2024.
-                </figcaption>
-              </figure>
+            {/* Сетка карточек серии с тем же визуалом, что и в галерее */}
+            <div
+              className="series-works"
+              aria-label="Работы серии «Северное сияние»"
+            >
+              {seriesWorks.map((work, index) => (
+                <article key={work.title} className="series-card series-card--stacked">
+                  <div className="series-card__link">
+                    <figure className="series-card__figure">
+                      <div className="series-card__image-placeholder">
+                        <Image
+                          src={work.image}
+                          alt={work.alt}
+                          fill
+                          sizes="(max-width: 640px) 92vw, (max-width: 1200px) 48vw, 420px"
+                          className="series-card__image"
+                          priority={index === 0}
+                        />
+                      </div>
+                      <figcaption className="series-card__caption">
+                        <h2 className="series-card__title">{work.title}</h2>
+                        <p className="series-card__meta">{work.meta}</p>
+                      </figcaption>
+                    </figure>
+                  </div>
+                </article>
+              ))}
             </div>
 
             {/* Завершение серии и навигация */}

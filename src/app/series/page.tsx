@@ -11,12 +11,17 @@ import Image from "next/image";
 import krugImage from "../assets/Krug.jpg";
 import lineImage from "../assets/Line.png";
 import scenaImage from "../assets/Scena.jpg";
-/* Акцентный шрифт Manrope берём из общего файла, чтобы логотип был единым на всех страницах */
-import { manrope } from "../../fonts/manrope";
+/* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
+import { SiteHeader, type SiteNavItem } from "../../../components/SiteHeader";
 
 export default function SeriesPage() {
-  /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
-  const [menuOpen, setMenuOpen] = useState(false);
+  /* Пункты меню для страницы с сериями: активным остаётся раздел «Серии» */
+  const navItems: SiteNavItem[] = [
+    { label: "Главная", href: "/" },
+    { label: "Галерея", href: "/#gallery" },
+    { label: "Серии", href: "/series", isActive: true },
+    { label: "О проекте", href: "/#about" },
+  ];
   /* Работы серии: название, описание и иллюстрация из assets */
   const seriesWorks = [
     {
@@ -145,73 +150,7 @@ export default function SeriesPage() {
   return (
     <>
       {/* Общая шапка, чтобы логотип и меню работали как на главной */}
-      <header className="site-header">
-        <div className="container site-header__inner">
-          {/* Логотип возвращает на главную страницу */}
-          <a href="/" className="site-logo">
-            {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
-            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
-          </a>
-
-          {/* Основная навигация по разделам с оверлеем на мобильных */}
-          <nav className="site-nav" aria-label="Основная навигация">
-            <input
-              type="checkbox"
-              id="nav-toggle"
-              className="site-nav__checkbox"
-              aria-hidden="true"
-              checked={menuOpen}
-              onChange={() => setMenuOpen((prev) => !prev)}
-            />
-            <label
-              htmlFor="nav-toggle"
-              className="site-nav__toggle"
-              aria-label="Открыть меню"
-            >
-              <span className="site-nav__bar"></span>
-              <span className="site-nav__bar"></span>
-            </label>
-            <ul className="site-nav__list">
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="/"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Главная
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="/#gallery"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Галерея
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link site-nav__link--active"
-                  href="/series"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Серии
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="/#about"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  О проекте
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader logoHref="/" navItems={navItems} />
 
       <main>
         {/* Отдельная страница серии с хлебными крошками и полосой карточек */}

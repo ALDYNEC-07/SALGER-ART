@@ -10,12 +10,17 @@ import type { KeyboardEvent } from "react";
 import Image from "next/image";
 /* Данные галереи вынесены в отдельный файл, чтобы пополнять их без правки компонента */
 import { gallerySeries } from "../data/gallerySeries";
-/* Акцентный шрифт Manrope подключаем из отдельного файла, чтобы не дублировать настройку */
-import { manrope } from "../fonts/manrope";
+/* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
+import { SiteHeader, type SiteNavItem } from "../../components/SiteHeader";
 
 export default function Home() {
-  /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
-  const [menuOpen, setMenuOpen] = useState(false);
+  /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */
+  const navItems: SiteNavItem[] = [
+    { label: "Главная", href: "#hero", isActive: true },
+    { label: "Галерея", href: "#gallery" },
+    { label: "Серии", href: "/series" },
+    { label: "О проекте", href: "#about" },
+  ];
   /* Список серий для превью берём из базы данных в папке data, чтобы данные жили отдельно от разметки */
   const gallerySeriesPreview = gallerySeries;
   /* Запоминаем карточки галереи, чтобы знать, куда скроллить и кого выделять */
@@ -125,74 +130,7 @@ export default function Home() {
   return (
     <>
       {/* Общая шапка для всей одностраничной галереи */}
-      <header className="site-header">
-        <div className="container site-header__inner">
-          {/* Логотип возвращает к верхней части страницы и визуально задаёт бренд */}
-          <a href="#hero" className="site-logo">
-            {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
-            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
-          </a>
-
-          {/* Основная навигация по разделам, открывается поверх контента на мобильных */}
-          <nav className="site-nav" aria-label="Основная навигация">
-            <input
-              type="checkbox"
-              id="nav-toggle"
-              className="site-nav__checkbox"
-              aria-hidden="true"
-              checked={menuOpen}
-              onChange={() => setMenuOpen((prev) => !prev)}
-            />
-            <label
-              htmlFor="nav-toggle"
-              className="site-nav__toggle"
-              aria-label="Открыть меню"
-            >
-              <span className="site-nav__bar"></span>
-              <span className="site-nav__bar"></span>
-            </label>
-            <ul className="site-nav__list">
-              <li className="site-nav__item">
-                {/* Активным оставляем первый пункт, без JS */}
-                <a
-                  className="site-nav__link site-nav__link--active"
-                  href="#hero"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Главная
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="#gallery"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Галерея
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="/series"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Серии
-                </a>
-              </li>
-              <li className="site-nav__item">
-                <a
-                  className="site-nav__link"
-                  href="#about"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  О проекте
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader logoHref="#hero" navItems={navItems} />
 
       <main>
         {/* ===================== Hero / Главная ===================== */}

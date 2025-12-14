@@ -8,7 +8,7 @@ import type { GallerySeriesItem } from "../../data/gallerySeries";
 import {
   SeriesCarousel,
   type SeriesCarouselItem,
-} from "./SeriesCarousel";
+} from "./SeriesCarousel/SeriesCarousel";
 
 type GalleryStripProps = {
   series: GallerySeriesItem[];
@@ -41,7 +41,6 @@ export function GalleryStrip({ series }: GalleryStripProps) {
       {/* Полоса превью серий растягивается на всю ширину окна и свободно скроллится */}
       <SeriesCarousel
         items={carouselItems}
-        railClassName="series-list__grid"
         ariaLabel="Список серий"
       />
     </section>

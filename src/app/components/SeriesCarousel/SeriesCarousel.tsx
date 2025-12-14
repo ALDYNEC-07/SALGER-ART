@@ -10,6 +10,7 @@ import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
+import styles from "./SeriesCarousel.module.css";
 
 export type SeriesCarouselItem = {
   title: string;
@@ -22,16 +23,18 @@ export type SeriesCarouselItem = {
 
 type SeriesCarouselProps = {
   items: SeriesCarouselItem[];
-  railClassName: string;
+  railClassName?: string;
   ariaLabel: string;
   tabIndex?: number;
+  metaTone?: "default" | "series";
 };
 
 export function SeriesCarousel({
   items,
-  railClassName,
+  railClassName = "",
   ariaLabel,
   tabIndex = 0,
+  metaTone = "default",
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -165,7 +168,7 @@ export function SeriesCarousel({
 
   return (
     <div
-      className={railClassName}
+      className={[styles.rail, railClassName].filter(Boolean).join(" ")}
       aria-label={ariaLabel}
       role="list"
       ref={railRef}
@@ -173,22 +176,29 @@ export function SeriesCarousel({
       tabIndex={tabIndex}
     >
       {items.map((item, index) => {
+        const metaClassName = [
+          styles.meta,
+          metaTone === "series" ? styles.metaSeries : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
         /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
         const cardContent = (
-          <figure className="series-card__figure">
-            <div className="series-card__image-placeholder">
+          <figure className={styles.figure}>
+            <div className={styles.imagePlaceholder}>
               <Image
                 src={item.image}
                 alt={item.alt}
                 fill
                 sizes={item.sizes}
-                className="series-card__image"
+                className={styles.image}
                 priority={index === 0}
               />
             </div>
-            <figcaption className="series-card__caption">
-              <h2 className="series-card__title">{item.title}</h2>
-              <p className="series-card__meta">{item.meta}</p>
+            <figcaption className={styles.caption}>
+              <h2 className={styles.title}>{item.title}</h2>
+              <p className={metaClassName}>{item.meta}</p>
             </figcaption>
           </figure>
         );
@@ -200,7 +210,10 @@ export function SeriesCarousel({
           <article
             key={`${item.href}-${item.title}`}
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
-            className={`series-card ${activeIndex === index ? "is-active" : "is-dim"}`}
+            className={[
+              styles.card,
+              activeIndex === index ? styles.cardActive : styles.cardDim,
+            ].join(" ")}
             role="listitem"
             aria-current={activeIndex === index ? "true" : undefined}
             ref={(node) => {
@@ -216,7 +229,7 @@ export function SeriesCarousel({
             {item.href.startsWith("#") ? (
               <a
                 href={item.href}
-                className="series-card__link"
+                className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}
               >
@@ -225,7 +238,7 @@ export function SeriesCarousel({
             ) : (
               <Link
                 href={item.href}
-                className="series-card__link"
+                className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}
               >

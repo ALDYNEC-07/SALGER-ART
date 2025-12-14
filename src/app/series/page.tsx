@@ -13,7 +13,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import {
   SeriesCarousel,
   type SeriesCarouselItem,
-} from "../components/SeriesCarousel";
+} from "../components/SeriesCarousel/SeriesCarousel";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../components/navConfig";
 /* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
@@ -68,8 +68,8 @@ export default function SeriesPage() {
           <div className="series-works">
             <SeriesCarousel
               items={carouselItems}
-              railClassName="series-works__rail"
               ariaLabel="Работы серии «Северное сияние»"
+              metaTone="series"
             />
           </div>
         </section>

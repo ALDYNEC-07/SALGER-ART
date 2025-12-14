@@ -1,3 +1,7 @@
+.pageAbout {
+  padding-top: calc(clamp(3rem, 8vh, 4.5rem) - 45px);
+}
+
 .pageAbout .page__body {
   max-width: var(--content-max-width);
   margin-inline: auto;

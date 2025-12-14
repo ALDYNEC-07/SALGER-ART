@@ -74,14 +74,12 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
               <span aria-current="page">{currentSeries.title}</span>
             </nav>
 
+            {/* В шапке серии оставляем только вступление и год, чтобы сразу настроить зрителя */}
             <header className={styles.seriesHeader}>
-              <h1 id="series-title" className={styles.seriesHeaderTitle}>
-                {currentSeries.title}
+              <h1 id="series-title" className={styles.seriesHeaderIntro}>
+                {currentSeries.intro}
               </h1>
-              <p className={styles.seriesHeaderMeta}>
-                {`${currentSeries.year} · ${currentSeries.meta}`}
-              </p>
-              <p className={styles.seriesHeaderIntro}>{currentSeries.intro}</p>
+              <p className={styles.seriesHeaderYear}>{currentSeries.year}</p>
             </header>
           </div>
 

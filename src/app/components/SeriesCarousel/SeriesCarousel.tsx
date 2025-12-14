@@ -29,6 +29,11 @@ type SeriesCarouselProps = {
   metaTone?: "default" | "series";
 };
 
+/* Эти числа задают, сколько карточка должна занимать на экране, чтобы снять размытие без резких скачков */
+const ACTIVE_RATIO_THRESHOLD = 0.6;
+const ACTIVE_RATIO_GAP = 0.12;
+const OBSERVER_THRESHOLDS = Array.from({ length: 21 }, (_, index) => index / 20);
+
 export function SeriesCarousel({
   items,
   railClassName = "",
@@ -94,6 +99,7 @@ export function SeriesCarousel({
       return;
     }
 
+    /* Следим за долей видимой площади карточки и даём активность только когда она заняла центр экрана */
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -110,17 +116,32 @@ export function SeriesCarousel({
         const bestIndex = visibilityRatios.current.reduce((best, ratio, idx, arr) => {
           return ratio > arr[best] ? idx : best;
         }, 0);
+        const bestRatio = visibilityRatios.current[bestIndex] ?? 0;
 
         setActiveIndex((prevIndex) => {
-          if (visibilityRatios.current[bestIndex] === 0) {
-            return 0;
+          const currentRatio = visibilityRatios.current[prevIndex] ?? 0;
+          const cardMostlyCentered = bestRatio >= ACTIVE_RATIO_THRESHOLD;
+          const cardClearlyAhead = bestRatio - currentRatio >= ACTIVE_RATIO_GAP;
+          const currentOutOfView = currentRatio === 0;
+
+          if (bestIndex === prevIndex) {
+            return prevIndex;
           }
-          return prevIndex === bestIndex ? prevIndex : bestIndex;
+
+          if (bestRatio === 0 && !currentOutOfView) {
+            return prevIndex;
+          }
+
+          if (!cardMostlyCentered && !cardClearlyAhead && !currentOutOfView) {
+            return prevIndex;
+          }
+
+          return bestIndex;
         });
       },
       {
         root: railRef.current,
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+        threshold: OBSERVER_THRESHOLDS,
       }
     );
 

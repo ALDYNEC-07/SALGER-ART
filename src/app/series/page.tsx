@@ -9,11 +9,11 @@ import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-/* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
+/* Берём готовую шапку сайта (логотип и меню) из одного места */
 import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
-/* Общий футер вынесен в компонент, чтобы не дублировать его разметку */
+/* Подключаем общий футер, чтобы не копировать его разметку */
 import { SiteFooter } from "../components/SiteFooter";
-/* Конфигурация меню вынесена в отдельный файл, чтобы обновлять пункты в одном месте */
+/* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../components/navConfig";
 /* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
 import { seriesWorks } from "../data/seriesWorks";
@@ -23,7 +23,7 @@ export default function SeriesPage() {
   const navItems: SiteNavItem[] = getNavItems("series");
   /* Запоминаем карточки серии, чтобы понимать, какая сейчас в центре */
   const seriesCardRefs = useRef<HTMLElement[]>([]);
-  /* Контейнер горизонтальной полосы карточек для отслеживания пересечений */
+  /* Контейнер горизонтальной полосы карточек, чтобы понимать, что сейчас видно */
   const seriesListRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка сейчас активна, чтобы убирать размытие у неё */
   const [activeSeriesCardIndex, setActiveSeriesCardIndex] = useState(0);
@@ -58,7 +58,7 @@ export default function SeriesPage() {
     };
   }, []);
 
-  /* Отмечаем центральную карточку серии через IntersectionObserver, чтобы подсветить её */
+  /* Вычисляем, какая карточка в центре экрана, чтобы подсветить её */
   useEffect(() => {
     if (!seriesListRef.current || seriesCardRefs.current.length === 0) {
       return;

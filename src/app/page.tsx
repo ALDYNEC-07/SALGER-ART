@@ -12,6 +12,8 @@ import Image from "next/image";
 import { gallerySeries } from "../data/gallerySeries";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
 import { SiteHeader, type SiteNavItem } from "./components/SiteHeader";
+/* Главный экран вынесен в отдельный компонент, чтобы использовать его в разных местах без дублирования */
+import { HeroSection } from "./components/HeroSection";
 
 export default function Home() {
   /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */
@@ -137,45 +139,8 @@ export default function Home() {
       <SiteHeader logoHref="#hero" navItems={navItems} />
 
       <main>
-        {/* ===================== Hero / Главная ===================== */}
-        <section id="hero" className="page page--home" aria-labelledby="hero-title">
-          <div className="hero">
-            <div className="hero__inner">
-              <div className="hero__layout">
-                {/* Ключевой визуальный блок с рамкой под арт и мягким сиянием */}
-                <div className="hero__media" aria-hidden="true">
-                  {/* Логотип проекта в центре рамки, чтобы напомнить о бренде */}
-                  <div className="hero__media-note">
-                    <Image
-                      src="/Logo.png"
-                      alt="Логотип SALGER ART"
-                      fill
-                      sizes="(max-width: 768px) 92vw, 640px"
-                      priority
-                      className="hero__logo"
-                    />
-                  </div>
-                </div>
-
-                {/* Слоган и главный заголовок, совмещённые с центром визуала, когда блоки стоят рядом */}
-                <div className="hero__content">
-                  <p className="hero__eyebrow">Онлайн-галерея цифрового искусства</p>
-                  <h1 id="hero-title" className="hero__title">
-                    One Bold Idea
-                  </h1>
-                  <p className="hero__subtitle">Everything starts with focus.</p>
-                </div>
-              </div>
-
-              {/* Призыв прокрутить вниз к галерее */}
-              <div className="hero__scroll">
-                <a className="hero__scroll-link" href="#gallery">
-                  <span className="hero__scroll-icon" aria-hidden="true"></span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Главный экран вынесен в компонент, чтобы страница оставалась короткой */}
+        <HeroSection />
 
         {/* ===================== Галерея серий ===================== */}
         <section

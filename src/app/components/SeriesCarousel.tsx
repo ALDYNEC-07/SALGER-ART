@@ -193,6 +193,9 @@ export function SeriesCarousel({
           </figure>
         );
 
+        /* Один общий обработчик снимает размытие при наведении или фокусе */
+        const activateCard = () => setActiveIndex(index);
+
         return (
           <article
             key={`${item.href}-${item.title}`}
@@ -208,14 +211,14 @@ export function SeriesCarousel({
               }
             }}
             /* При наведении сразу делаем карточку чёткой */
-            onMouseEnter={() => setActiveIndex(index)}
+            onMouseEnter={activateCard}
           >
             {item.href.startsWith("#") ? (
               <a
                 href={item.href}
                 className="series-card__link"
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
-                onFocus={() => setActiveIndex(index)}
+                onFocus={activateCard}
               >
                 {cardContent}
               </a>
@@ -224,7 +227,7 @@ export function SeriesCarousel({
                 href={item.href}
                 className="series-card__link"
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
-                onFocus={() => setActiveIndex(index)}
+                onFocus={activateCard}
               >
                 {cardContent}
               </Link>

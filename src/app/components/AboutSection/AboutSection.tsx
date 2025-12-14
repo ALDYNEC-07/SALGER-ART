@@ -6,13 +6,18 @@
 
 import Image from "next/image";
 /* Портрет автора для блока рядом с манифестом */
-import authorImage from "../assets/Author.jpg";
+import authorImage from "../../assets/Author.jpg";
+import styles from "./AboutSection.module.css";
 
 export function AboutSection() {
   return (
     <>
       {/* Раздел с манифестом и подписью автора */}
-      <section id="about" className="page page--about" aria-labelledby="about-title">
+      <section
+        id="about"
+        className={`page ${styles.pageAbout}`}
+        aria-labelledby="about-title"
+      >
         <div className="container">
           <header className="page__header">
             <h1 id="about-title" className="page-title">
@@ -21,10 +26,10 @@ export function AboutSection() {
           </header>
 
           <div className="page__body">
-            <div className="about-layout">
+            <div className={styles.aboutLayout}>
               {/* Текст манифеста */}
-              <div className="manifest-text">
-                <p className="manifest-lead">«В тишине рождается образ».</p>
+              <div className={styles.manifestText}>
+                <p className={styles.manifestLead}>«В тишине рождается образ».</p>
 
                 <p>
                   Этот онлайн-проект родился из усталости от визуального шума.
@@ -51,30 +56,28 @@ export function AboutSection() {
                   к деталям — вы в правильном месте.
                 </p>
 
-                <p className="manifest-signature">
-                  Спасибо за внимание к моему искусству. Присоединяйтесь к тишине.
-                </p>
+                <p className={styles.manifestSignature}>Спасибо за внимание к моему искусству. Присоединяйтесь к тишине.</p>
               </div>
 
               {/* Портрет автора рядом с текстом манифеста */}
               <aside
-                className="about-media"
+                className={styles.aboutMedia}
                 aria-label="Фотография или иллюстрация автора"
               >
-                <figure className="about-media__figure">
-                  <div className="about-media__frame">
-                    <div className="about-media__placeholder">
+                <figure className={styles.aboutMediaFigure}>
+                  <div className={styles.aboutMediaFrame}>
+                    <div className={styles.aboutMediaPlaceholder}>
                       <Image
                         src={authorImage}
                         alt="Портрет автора проекта"
                         fill
-                        sizes="(max-width: 960px) 100vw, 220px"
-                        className="about-media__image"
+                        sizes="(max-width: 960px) 100vw, 160px"
+                        className={styles.aboutMediaImage}
                         priority
                       />
                     </div>
                   </div>
-                  <figcaption className="about-media__caption">
+                  <figcaption className={styles.aboutMediaCaption}>
                     Автор проекта на фоне мастерской.
                   </figcaption>
                 </figure>

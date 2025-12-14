@@ -10,6 +10,7 @@ import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
+import styles from "./SeriesCarousel.module.css";
 
 export type SeriesCarouselItem = {
   title: string;
@@ -22,16 +23,18 @@ export type SeriesCarouselItem = {
 
 type SeriesCarouselProps = {
   items: SeriesCarouselItem[];
-  railClassName: string;
+  railClassName?: string;
   ariaLabel: string;
   tabIndex?: number;
+  metaTone?: "default" | "series";
 };
 
 export function SeriesCarousel({
   items,
-  railClassName,
+  railClassName = "",
   ariaLabel,
   tabIndex = 0,
+  metaTone = "default",
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -51,6 +54,8 @@ export function SeriesCarousel({
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items.map((item) => `${item.title}-${item.href}`).join("|");
+  /* Держим индекс в безопасных пределах, даже если список карточек сократился */
+  const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
   /* Обновляем реакцию на изменение системной настройки движения без перезагрузки страницы */
   useEffect(() => {
@@ -79,11 +84,6 @@ export function SeriesCarousel({
   useEffect(() => {
     cardRefs.current.length = items.length;
     visibilityRatios.current = new Array(items.length).fill(0);
-    setActiveIndex((prevIndex) => {
-      if (items.length === 0) return 0;
-      const safeIndex = Math.min(prevIndex, items.length - 1);
-      return prevIndex === safeIndex ? prevIndex : safeIndex;
-    });
   }, [items.length, itemsSignature]);
 
   /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
@@ -152,20 +152,20 @@ export function SeriesCarousel({
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      const nextIndex = Math.min(activeIndex + 1, cardRefs.current.length - 1);
+      const nextIndex = Math.min(safeActiveIndex + 1, cardRefs.current.length - 1);
       scrollToCard(nextIndex);
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      const prevIndex = Math.max(activeIndex - 1, 0);
+      const prevIndex = Math.max(safeActiveIndex - 1, 0);
       scrollToCard(prevIndex);
     }
   };
 
   return (
     <div
-      className={railClassName}
+      className={[styles.rail, railClassName].filter(Boolean).join(" ")}
       aria-label={ariaLabel}
       role="list"
       ref={railRef}
@@ -173,22 +173,29 @@ export function SeriesCarousel({
       tabIndex={tabIndex}
     >
       {items.map((item, index) => {
+        const metaClassName = [
+          styles.meta,
+          metaTone === "series" ? styles.metaSeries : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
         /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
         const cardContent = (
-          <figure className="series-card__figure">
-            <div className="series-card__image-placeholder">
+          <figure className={styles.figure}>
+            <div className={styles.imagePlaceholder}>
               <Image
                 src={item.image}
                 alt={item.alt}
                 fill
                 sizes={item.sizes}
-                className="series-card__image"
+                className={styles.image}
                 priority={index === 0}
               />
             </div>
-            <figcaption className="series-card__caption">
-              <h2 className="series-card__title">{item.title}</h2>
-              <p className="series-card__meta">{item.meta}</p>
+            <figcaption className={styles.caption}>
+              <h2 className={styles.title}>{item.title}</h2>
+              <p className={metaClassName}>{item.meta}</p>
             </figcaption>
           </figure>
         );
@@ -200,9 +207,12 @@ export function SeriesCarousel({
           <article
             key={`${item.href}-${item.title}`}
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
-            className={`series-card ${activeIndex === index ? "is-active" : "is-dim"}`}
+            className={[
+              styles.card,
+              safeActiveIndex === index ? styles.cardActive : styles.cardDim,
+            ].join(" ")}
             role="listitem"
-            aria-current={activeIndex === index ? "true" : undefined}
+            aria-current={safeActiveIndex === index ? "true" : undefined}
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;
@@ -216,7 +226,7 @@ export function SeriesCarousel({
             {item.href.startsWith("#") ? (
               <a
                 href={item.href}
-                className="series-card__link"
+                className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}
               >
@@ -225,7 +235,7 @@ export function SeriesCarousel({
             ) : (
               <Link
                 href={item.href}
-                className="series-card__link"
+                className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}
               >

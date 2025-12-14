@@ -1,78 +1,37 @@
 /* 
- Этот файл описывает отдельную страницу серии.
- Он показывает шапку сайта, хлебные крошки и полосу карточек с работами серии.
- Он позволяет пролистывать карточки по стрелкам, смотреть описание и вернуться на главную страницу.
+ Этот файл показывает страницу со всеми доступными сериями.
+ Он выводит шапку сайта, ленту карточек серий и общий футер.
+ Он позволяет выбрать любую серию и перейти на её отдельную страницу с работами.
 */
 
-import Link from "next/link";
+/* Берём данные серий из одного файла, чтобы список карточек совпадал на главной и на отдельной странице */
+import { gallerySeries } from "../../data/gallerySeries";
 /* Берём готовую шапку сайта (логотип и меню) из одного места */
-import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
-/* Подключаем общий футер, чтобы не копировать его разметку */
-import { SiteFooter } from "../components/SiteFooter";
-/* Подключаем общую карусель карточек, чтобы логика скролла оставалась одинаковой */
 import {
-  SeriesCarousel,
-  type SeriesCarouselItem,
-} from "../components/SeriesCarousel";
+  SiteHeader,
+  type SiteNavItem,
+} from "../components/SiteHeader/SiteHeader";
+/* Подключаем ленту серий, чтобы не дублировать её разметку */
+import { GalleryStrip } from "../components/GalleryStrip/GalleryStrip";
+/* Подключаем общий футер, чтобы не копировать его разметку */
+import { SiteFooter } from "../components/SiteFooter/SiteFooter";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
-import { getNavItems } from "../components/navConfig";
-/* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
-import { seriesWorks } from "../../data/seriesWorks";
+import { getNavItems } from "../config/navConfig";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
-  /* Собираем карточки серии с нужными размерами изображений для общей карусели */
-  const carouselItems: SeriesCarouselItem[] = seriesWorks.map((work) => ({
-    title: work.title,
-    meta: work.meta,
-    image: work.image,
-    alt: work.alt,
-    href: "#series",
-    sizes: "(max-width: 640px) 92vw, (max-width: 1200px) 48vw, 420px",
-  }));
+  /* Готовим список серий для карточек на странице выбора серии */
+  const seriesList = gallerySeries;
 
   return (
     <>
-      {/* Общая шапка, чтобы логотип и меню работали как на главной */}
+      {/* Общая шапка, чтобы логотип и меню повторяли главную страницу */}
       <SiteHeader logoHref="/" navItems={navItems} />
 
       <main>
-        {/* Отдельная страница серии с хлебными крошками и полосой карточек */}
-        <section
-          id="series"
-          className="page page--series"
-          aria-labelledby="series-title"
-        >
-          <div className="container">
-            {/* Хлебные крошки на случай возврата в галерею */}
-            <nav className="breadcrumbs" aria-label="Хлебные крошки">
-              <Link href="/#gallery">Галерея</Link>
-              <span aria-hidden="true"> / </span>
-              <span aria-current="page">Северное сияние</span>
-            </nav>
-
-            <header className="series-header">
-              <h1 id="series-title" className="series-header__title">
-                Северное сияние
-              </h1>
-              <p className="series-header__meta">Серия цифровых работ, 2024</p>
-              <p className="series-header__intro">
-                Короткий манифест серии: одна–две строки о настроении и идее,
-                без длинных описаний.
-              </p>
-            </header>
-          </div>
-
-          {/* Полоса карточек серии на всю ширину экрана с эффектом размытия соседей */}
-          <div className="series-works">
-            <SeriesCarousel
-              items={carouselItems}
-              railClassName="series-works__rail"
-              ariaLabel="Работы серии «Северное сияние»"
-            />
-          </div>
-        </section>
+        {/* Полноэкранный список всех серий, чтобы выбрать нужную карточку */}
+        <GalleryStrip series={seriesList} />
       </main>
 
       {/* Общий футер вынесен в компонент, чтобы использовать на всех страницах серии */}

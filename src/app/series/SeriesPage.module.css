@@ -1,0 +1,43 @@
+.pageSeries {
+  overflow: visible;
+}
+
+.breadcrumbs {
+  margin-bottom: var(--space-m);
+  font-size: var(--fs-sm);
+  color: #555555;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+}
+
+.breadcrumbs span[aria-current="page"] {
+  font-weight: 500;
+}
+
+.seriesHeader {
+  margin-bottom: var(--space-2xl);
+}
+
+.seriesHeaderTitle {
+  margin: 0 0 var(--space-xs);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+.seriesHeaderMeta {
+  margin: 0 0 var(--space-s);
+  font-size: var(--fs-sm);
+  color: #555555;
+}
+
+.seriesHeaderIntro {
+  margin: 0;
+  max-width: 34rem;
+  font-size: var(--fs-md);
+  font-style: italic;
+}
+
+.seriesWorks {
+  overflow: visible;
+}

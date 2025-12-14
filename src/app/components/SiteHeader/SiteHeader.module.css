@@ -1,0 +1,154 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.headerInner {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+}
+
+.logo {
+  font-size: var(--fs-md);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.logoText {
+  display: inline-block;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  isolation: isolate;
+}
+
+.navCheckbox {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navToggle {
+  position: relative;
+  z-index: 1400;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: var(--header-height);
+  padding: 0;
+  background: transparent;
+  border: none;
+  appearance: none;
+  cursor: pointer;
+  color: #111111;
+  gap: 6px;
+}
+
+.navBar {
+  display: block;
+  width: 2.3rem;
+  height: 1.2px;
+  background-color: currentColor;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xl);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 1300;
+}
+
+.navCheckbox:checked + .navToggle + .navList {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.navItem {
+  list-style: none;
+}
+
+.navLink {
+  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.9;
+  color: #111;
+}
+
+.navLinkActive {
+  color: #111;
+}
+
+:global(body.site-nav-open) {
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .navToggle {
+    display: none;
+  }
+
+  .navList {
+    position: static;
+    inset: auto;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-l);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: none;
+    min-height: auto;
+  }
+
+  .navLink {
+    font-size: var(--fs-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :global(body.site-nav-open) {
+    overflow: auto;
+  }
+}

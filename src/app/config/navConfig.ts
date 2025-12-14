@@ -3,7 +3,7 @@
  Он показывает, какие ссылки должны быть в шапке на разных страницах.
  Он позволяет менять меню в одном месте и сразу обновлять его на всех страницах.
 */
-import type { SiteNavItem } from "./SiteHeader";
+import type { SiteNavItem } from "../components/SiteHeader/SiteHeader";
 
 /* Набор пунктов для главной страницы с якорями внутри одной страницы */
 const homeNavItems: SiteNavItem[] = [

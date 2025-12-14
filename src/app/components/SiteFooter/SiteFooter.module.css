@@ -1,0 +1,13 @@
+.siteFooter {
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  padding-block: var(--space-m);
+}
+
+.siteFooterInner {
+  font-size: var(--fs-xs);
+  color: #555555;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-s);
+  flex-wrap: wrap;
+}

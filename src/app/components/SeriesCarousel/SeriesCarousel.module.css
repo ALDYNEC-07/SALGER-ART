@@ -1,4 +1,7 @@
 .rail {
+  --card-width: clamp(300px, 72vw, 640px);
+  --card-aspect: 70%;
+
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
@@ -17,7 +20,7 @@
 .rail::before,
 .rail::after {
   content: "";
-  flex: 0 0 calc((100% - clamp(300px, 72vw, 640px)) / 2);
+  flex: 0 0 calc((100% - var(--card-width)) / 2);
 }
 
 .rail::-webkit-scrollbar {
@@ -36,10 +39,10 @@
 .card {
   display: flex;
   flex: 0 0 auto;
-  width: clamp(300px, 72vw, 640px);
+  width: var(--card-width);
   scroll-snap-align: center;
   scroll-snap-stop: always;
-  transition: filter 320ms ease, opacity 320ms ease, transform 320ms ease;
+  transition: filter 480ms ease, opacity 480ms ease, transform 320ms ease;
 }
 
 .cardDim {
@@ -70,7 +73,7 @@
 .imagePlaceholder {
   position: relative;
   border-radius: 1rem;
-  padding-top: 70%;
+  padding-top: var(--card-aspect);
   overflow: hidden;
   background-color: #f3f3f3;
   border: 1px solid rgba(0, 0, 0, 0.04);
@@ -89,6 +92,17 @@
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+  transition: filter 520ms ease, opacity 520ms ease;
+}
+
+.cardDim .image {
+  filter: blur(calc(var(--hero-frame-blur) * 0.85));
+  opacity: 0.6;
+}
+
+.cardActive .image {
+  filter: blur(0);
+  opacity: 1;
 }
 
 .caption {
@@ -135,5 +149,17 @@
   .card,
   .imagePlaceholder {
     transition: none;
+  }
+
+  .image {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .rail {
+    --card-width: clamp(320px, 90vw, 600px);
+    --card-aspect: 80%;
+    gap: clamp(20px, 6vw, 32px);
   }
 }

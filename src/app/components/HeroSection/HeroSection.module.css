@@ -5,7 +5,8 @@
 .hero {
   position: relative;
   min-height: calc(100vh - var(--header-height));
-  padding-block: clamp(2.5rem, 9vh, 4.5rem);
+  padding-block-start: clamp(1.1rem, 5vh, 3.1rem);
+  padding-block-end: clamp(2.5rem, 9vh, 4.5rem);
 }
 
 @supports (height: 100svh) {
@@ -22,7 +23,7 @@
 
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: 10px;
   height: 100%;
 }
 
@@ -105,10 +106,11 @@
 }
 
 .heroScroll {
-  margin-top: auto;
+  margin-top: 10px;
+  margin-bottom: clamp(1.25rem, 3vh, 2.25rem);
   display: flex;
   justify-content: center;
-  transform: translateY(50px);
+  transform: translateY(0);
 }
 
 .heroScrollLink {

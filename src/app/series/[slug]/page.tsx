@@ -21,16 +21,22 @@ import {
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../../config/navConfig";
 /* Берём данные выбранной серии из общего списка по её адресу */
-import { getSeriesBySlug } from "../../../data/seriesCollection";
+import { getSeriesBySlug, seriesCollection } from "../../../data/seriesCollection";
 import styles from "../SeriesPage.module.css";
 
 type SeriesPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-export default function SeriesDetailPage({ params }: SeriesPageProps) {
+/* Подсказываем Next.js, какие адреса серий нужно заранее подготовить */
+export function generateStaticParams() {
+  return seriesCollection.map((series) => ({ slug: series.slug }));
+}
+
+export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   /* Ищем серию по адресу страницы и заранее отсекаем неизвестные варианты */
-  const currentSeries = getSeriesBySlug(params.slug);
+  const { slug } = await params;
+  const currentSeries = getSeriesBySlug(slug);
 
   if (!currentSeries) {
     notFound();

@@ -9,40 +9,18 @@ import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import krugImage from "@/app/assets/Krug.jpg";
-import lineImage from "@/app/assets/Line.png";
-import scenaImage from "@/app/assets/Scena.jpg";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
 import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
 /* Общий футер вынесен в компонент, чтобы не дублировать его разметку */
 import { SiteFooter } from "../components/SiteFooter";
 /* Конфигурация меню вынесена в отдельный файл, чтобы обновлять пункты в одном месте */
 import { getNavItems } from "../components/navConfig";
+/* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
+import { seriesWorks } from "../data/seriesWorks";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
-  /* Работы серии: название, описание и иллюстрация из assets */
-  const seriesWorks = [
-    {
-      title: "Полярная тишина",
-      meta: "Холодное свечение, будто северное сияние застыло в кадре.",
-      image: scenaImage,
-      alt: "Полотно «Полярная тишина»: мягкий свет прожекторов на тёмном фоне",
-    },
-    {
-      title: "Ночная грань",
-      meta: "Ровные линии неона, которые держат пространство в равновесии.",
-      image: lineImage,
-      alt: "Полотно «Ночная грань»: тонкие полосы неона на тёмном фоне",
-    },
-    {
-      title: "Тёплый круг",
-      meta: "Плавный круг цвета, который собирает взгляд в одну точку.",
-      image: krugImage,
-      alt: "Полотно «Тёплый круг»: кольца света на нейтральном фоне",
-    },
-  ];
   /* Запоминаем карточки серии, чтобы понимать, какая сейчас в центре */
   const seriesCardRefs = useRef<HTMLElement[]>([]);
   /* Контейнер горизонтальной полосы карточек для отслеживания пересечений */

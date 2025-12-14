@@ -1,5 +1,10 @@
 import type { StaticImageData } from "next/image";
 import scenaImage from "../app/assets/Scena.jpg";
+import WdokhImage from "../app/assets/Wdokh.png";
+import TeatrImage from "../app/assets/Teatr.png";
+import ProjectorImage from "../app/assets/Projector.png";
+
+
 import lineImage from "../app/assets/Line.png";
 import krugImage from "../app/assets/Krug.jpg";
 import idealLineImage from "../app/assets/Ideal-line.jpg";
@@ -38,6 +43,24 @@ export const seriesCollection: SeriesEntry[] = [
         meta: "Холодное свечение, будто северное сияние застыло в кадре.",
         image: scenaImage,
         alt: "Полотно «Полярная тишина»: мягкий свет прожекторов на тёмном фоне",
+      },
+      {
+        title: "Вдох",
+        meta: "«Уважение вызывает находящийся на арене борьбы человек…» — Теодор Рузвельт",
+        image: WdokhImage,
+        alt: "Сцена на природе",
+      },
+      {
+        title: "Театр",
+        meta: "«Весь мир — театр, а люди в нём — актёры.» — Уильям Шекспир",
+        image: TeatrImage,
+        alt: "Театр",
+      },
+      {
+        title: "Перед началом",
+        meta: "“Главное в пьесе” — Уильям Шекспир",
+        image: ProjectorImage,
+        alt: "Прожектор",
       },
     ],
   },

@@ -3,17 +3,14 @@
  Он показывает шапку, блок Hero, галерею серий и манифест о проекте на одной странице.
  Он позволяет прокручивать страницу по якорям и переходить к нужному разделу без перезагрузки.
 */
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
-import Image from "next/image";
 /* Данные галереи вынесены в отдельный файл, чтобы пополнять их без правки компонента */
 import { gallerySeries } from "../data/gallerySeries";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
 import { SiteHeader, type SiteNavItem } from "./components/SiteHeader";
 /* Главный экран вынесен в отдельный компонент, чтобы использовать его в разных местах без дублирования */
 import { HeroSection } from "./components/HeroSection";
+/* Горизонтальная лента серий вынесена в компонент, чтобы логика подсветки была локальной */
+import { SeriesStrip } from "./components/SeriesStrip";
 
 export default function Home() {
   /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */
@@ -25,113 +22,6 @@ export default function Home() {
   ];
   /* Список серий для превью берём из базы данных в папке data, чтобы данные жили отдельно от разметки */
   const gallerySeriesPreview = gallerySeries;
-  /* Запоминаем карточки галереи, чтобы знать, куда скроллить и кого выделять */
-  const galleryCardRefs = useRef<HTMLElement[]>([]);
-  /* Запоминаем контейнер галереи, который скроллится по горизонтали */
-  const galleryListRef = useRef<HTMLDivElement | null>(null);
-  /* Следим, какая карточка сейчас в центре, чтобы подсвечивать её среди остальных */
-  const [activeCardIndex, setActiveCardIndex] = useState(0);
-  /* Учитываем запрос пользователя на минимальное движение */
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  });
-
-  /* Следим за изменениями системного запроса на уменьшение анимаций */
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-    };
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleMotionChange);
-    } else {
-      mediaQuery.addListener(handleMotionChange);
-    }
-
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleMotionChange);
-      } else {
-        mediaQuery.removeListener(handleMotionChange);
-      }
-    };
-  }, []);
-
-  /* Отмечаем центральную карточку через IntersectionObserver, чтобы выделять её без ручных кликов */
-  useEffect(() => {
-    if (!galleryListRef.current || galleryCardRefs.current.length === 0) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            const index = galleryCardRefs.current.indexOf(entry.target as HTMLElement);
-            if (index >= 0) {
-              setActiveCardIndex(index);
-            }
-          }
-        });
-      },
-      {
-        root: galleryListRef.current,
-        threshold: 0.6,
-      }
-    );
-
-    galleryCardRefs.current.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, []);
-
-  /* Переключаем классы активной и приглушённых карточек, как только вычислили центральную */
-  useEffect(() => {
-    galleryCardRefs.current.forEach((card, index) => {
-      if (!card) return;
-      card.classList.toggle("is-active", index === activeCardIndex);
-      card.classList.toggle("is-dim", index !== activeCardIndex);
-    });
-  }, [activeCardIndex]);
-
-  /* Прокрутка к нужной карточке влево/вправо с учётом предпочтений по анимации */
-  const scrollToCard = (nextIndex: number) => {
-    const targetCard = galleryCardRefs.current[nextIndex];
-    if (!targetCard) return;
-
-    targetCard.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  };
-
-  /* Стрелки влево/вправо двигают карусель к соседним карточкам */
-  const handleGalleryKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (!galleryCardRefs.current.length) {
-      return;
-    }
-
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      const nextIndex = Math.min(
-        activeCardIndex + 1,
-        galleryCardRefs.current.length - 1
-      );
-      scrollToCard(nextIndex);
-    }
-
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      const prevIndex = Math.max(activeCardIndex - 1, 0);
-      scrollToCard(prevIndex);
-    }
-  };
 
   return (
     <>
@@ -142,70 +32,8 @@ export default function Home() {
         {/* Главный экран вынесен в компонент, чтобы страница оставалась короткой */}
         <HeroSection />
 
-        {/* ===================== Галерея серий ===================== */}
-        <section
-          id="gallery"
-          className="page page--gallery"
-          aria-labelledby="gallery-title"
-        >
-          <div className="container">
-            <header className="page__header">
-              <h1 id="gallery-title" className="page-title">
-                Галерея
-              </h1>
-              <p className="page-intro">
-                Выберите серию — и войдите в отдельный зал.
-              </p>
-            </header>
-          </div>
-
-          {/* Полоса превью серий растягивается на всю ширину окна и свободно скроллится */}
-          <div
-            className="series-list__grid"
-            aria-label="Список серий"
-            ref={galleryListRef}
-            onKeyDown={handleGalleryKeyDown}
-            tabIndex={0}
-          >
-            {gallerySeriesPreview.map((series, index) => (
-              <article
-                key={series.title}
-                className="series-card"
-                ref={(node) => {
-                  if (node) {
-                    galleryCardRefs.current[index] = node;
-                  }
-                }}
-                /* При наведении сразу отмечаем карточку активной, чтобы выбранная не оставалась размытой */
-                onMouseEnter={() => setActiveCardIndex(index)}
-              >
-                <a
-                  href="/series"
-                  className="series-card__link"
-                  /* При фокусе через клавиатуру тоже снимаем размытие с выбранной карточки */
-                  onFocus={() => setActiveCardIndex(index)}
-                >
-                  <figure className="series-card__figure">
-                    <div className="series-card__image-placeholder">
-                      <Image
-                        src={series.image}
-                        alt={series.alt}
-                        fill
-                        sizes="(max-width: 640px) 80vw, (max-width: 1200px) 46vw, 520px"
-                        className="series-card__image"
-                        priority={index === 0}
-                      />
-                    </div>
-                    <figcaption className="series-card__caption">
-                      <h2 className="series-card__title">{series.title}</h2>
-                      <p className="series-card__meta">{series.meta}</p>
-                    </figcaption>
-                  </figure>
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
+        {/* Горизонтальная лента серий вынесена в компонент, чтобы страница не разрасталась */}
+        <SeriesStrip series={gallerySeriesPreview} />
 
         {/* ===================== О проекте (манифест) ===================== */}
         <section id="about" className="page page--about" aria-labelledby="about-title">

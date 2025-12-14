@@ -16,15 +16,12 @@ import scenaImage from "@/app/assets/Scena.jpg";
 import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
 /* Общий футер вынесен в компонент, чтобы не дублировать его разметку */
 import { SiteFooter } from "../components/SiteFooter";
+/* Конфигурация меню вынесена в отдельный файл, чтобы обновлять пункты в одном месте */
+import { getNavItems } from "../components/navConfig";
 
 export default function SeriesPage() {
-  /* Пункты меню для страницы с сериями: активным остаётся раздел «Серии» */
-  const navItems: SiteNavItem[] = [
-    { label: "Главная", href: "/" },
-    { label: "Галерея", href: "/#gallery" },
-    { label: "Серии", href: "/series", isActive: true },
-    { label: "О проекте", href: "/#about" },
-  ];
+  /* Пункты меню для страницы серии берём из общей конфигурации */
+  const navItems: SiteNavItem[] = getNavItems("series");
   /* Работы серии: название, описание и иллюстрация из assets */
   const seriesWorks = [
     {

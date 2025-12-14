@@ -15,15 +15,12 @@ import { SeriesStrip } from "./components/SeriesStrip";
 import { AboutSection } from "./components/AboutSection";
 /* Общий футер вынесен в компонент, чтобы не дублировать верстку на страницах */
 import { SiteFooter } from "./components/SiteFooter";
+/* Конфигурация меню вынесена в отдельный файл, чтобы обновлять пункты в одном месте */
+import { getNavItems } from "./components/navConfig";
 
 export default function Home() {
-  /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */
-  const navItems: SiteNavItem[] = [
-    { label: "Главная", href: "#hero", isActive: true },
-    { label: "Галерея", href: "#gallery" },
-    { label: "Серии", href: "/series" },
-    { label: "О проекте", href: "#about" },
-  ];
+  /* Пункты меню для одностраничной галереи берём из общей конфигурации */
+  const navItems: SiteNavItem[] = getNavItems("home");
   /* Список серий для превью берём из базы данных в папке data, чтобы данные жили отдельно от разметки */
   const gallerySeriesPreview = gallerySeries;
 

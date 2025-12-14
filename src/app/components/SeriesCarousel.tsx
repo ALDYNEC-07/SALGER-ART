@@ -35,6 +35,8 @@ export function SeriesCarousel({
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  /* Отслеживаем, какая карточка видна сильнее остальных, чтобы подсветку не сносило скачками */
+  const visibilityRatios = useRef<number[]>([]);
   /* Фиксируем контейнер полосы, чтобы отслеживать, какие карточки видны в данный момент */
   const railRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
@@ -73,9 +75,10 @@ export function SeriesCarousel({
     };
   }, []);
 
-  /* Очищаем устаревшие ссылки на карточки и не даём активному индексу выходить за пределы новых данных */
+  /* Очищаем устаревшие ссылки и видимость карточек, не даём активному индексу выходить за пределы новых данных */
   useEffect(() => {
     cardRefs.current.length = items.length;
+    visibilityRatios.current = new Array(items.length).fill(0);
     setActiveIndex((prevIndex) => {
       if (items.length === 0) return 0;
       const safeIndex = Math.min(prevIndex, items.length - 1);
@@ -83,7 +86,7 @@ export function SeriesCarousel({
     });
   }, [items.length, itemsSignature]);
 
-  /* Отмечаем карточку, которая занимает центр видимой области, чтобы подсветить её */
+  /* Ищем самую заметную карточку в зоне видимости, чтобы подсветка оставалась стабильной */
   useEffect(() => {
     if (!railRef.current || cardRefs.current.length === 0) {
       return;
@@ -92,12 +95,25 @@ export function SeriesCarousel({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            const index = cardRefs.current.indexOf(entry.target as HTMLElement);
-            if (index >= 0) {
-              setActiveIndex(index);
-            }
+          const index = cardRefs.current.indexOf(entry.target as HTMLElement);
+          if (index >= 0) {
+            visibilityRatios.current[index] = entry.isIntersecting ? entry.intersectionRatio : 0;
           }
+        });
+
+        if (!visibilityRatios.current.length) {
+          return;
+        }
+
+        const bestIndex = visibilityRatios.current.reduce((best, ratio, idx, arr) => {
+          return ratio > arr[best] ? idx : best;
+        }, 0);
+
+        setActiveIndex((prevIndex) => {
+          if (visibilityRatios.current[bestIndex] === 0) {
+            return 0;
+          }
+          return prevIndex === bestIndex ? prevIndex : bestIndex;
         });
       },
       {
@@ -114,19 +130,12 @@ export function SeriesCarousel({
     return () => observer.disconnect();
   }, [items.length, itemsSignature]);
 
-  /* Переключаем визуальный акцент между карточками */
-  useEffect(() => {
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return;
-      card.classList.toggle("is-active", index === activeIndex);
-      card.classList.toggle("is-dim", index !== activeIndex);
-    });
-  }, [activeIndex]);
-
-  /* Прокручиваем полосу к нужной карточке с учётом предпочтений по анимации */
+  /* Прокручиваем полосу к нужной карточке с учётом предпочтений по анимации и сразу переставляем подсветку */
   const scrollToCard = (nextIndex: number) => {
     const targetCard = cardRefs.current[nextIndex];
     if (!targetCard) return;
+
+    setActiveIndex(nextIndex);
 
     targetCard.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -166,7 +175,8 @@ export function SeriesCarousel({
       {items.map((item, index) => (
         <article
           key={`${item.href}-${item.title}`}
-          className="series-card"
+          /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
+          className={`series-card ${activeIndex === index ? "is-active" : "is-dim"}`}
           role="listitem"
           aria-current={activeIndex === index ? "true" : undefined}
           ref={(node) => {

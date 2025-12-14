@@ -86,7 +86,7 @@ export function SeriesCarousel({
     });
   }, [items.length, itemsSignature]);
 
-  /* Ищем самую заметную карточку в зоне видимости, чтобы подсветка оставалась стабильной */
+  /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
   useEffect(() => {
     if (!railRef.current || cardRefs.current.length === 0) {
       return;
@@ -118,7 +118,7 @@ export function SeriesCarousel({
       },
       {
         root: railRef.current,
-        threshold: 0.6,
+        threshold: [0, 0.25, 0.5, 0.75, 1],
       }
     );
 

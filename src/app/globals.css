@@ -248,7 +248,7 @@ h3 {
   color: #111;
 }
 
-body:has(#nav-toggle:checked) {
+body:has(.site-nav__checkbox:checked) {
   overflow: hidden;
 }
 @media (min-width: 768px) {

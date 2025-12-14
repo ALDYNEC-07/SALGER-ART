@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
+import Link from "next/link";
 
 export type SeriesCarouselItem = {
   title: string;
@@ -161,29 +162,55 @@ export function SeriesCarousel({
           /* При наведении сразу делаем карточку чёткой */
           onMouseEnter={() => setActiveIndex(index)}
         >
-          <a
-            href={item.href}
-            className="series-card__link"
-            /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
-            onFocus={() => setActiveIndex(index)}
-          >
-            <figure className="series-card__figure">
-              <div className="series-card__image-placeholder">
-                <Image
-                  src={item.image}
-                  alt={item.alt}
-                  fill
-                  sizes={item.sizes}
-                  className="series-card__image"
-                  priority={index === 0}
-                />
-              </div>
-              <figcaption className="series-card__caption">
-                <h2 className="series-card__title">{item.title}</h2>
-                <p className="series-card__meta">{item.meta}</p>
-              </figcaption>
-            </figure>
-          </a>
+          {item.href.startsWith("#") ? (
+            <a
+              href={item.href}
+              className="series-card__link"
+              /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+              onFocus={() => setActiveIndex(index)}
+            >
+              <figure className="series-card__figure">
+                <div className="series-card__image-placeholder">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    sizes={item.sizes}
+                    className="series-card__image"
+                    priority={index === 0}
+                  />
+                </div>
+                <figcaption className="series-card__caption">
+                  <h2 className="series-card__title">{item.title}</h2>
+                  <p className="series-card__meta">{item.meta}</p>
+                </figcaption>
+              </figure>
+            </a>
+          ) : (
+            <Link
+              href={item.href}
+              className="series-card__link"
+              /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+              onFocus={() => setActiveIndex(index)}
+            >
+              <figure className="series-card__figure">
+                <div className="series-card__image-placeholder">
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    sizes={item.sizes}
+                    className="series-card__image"
+                    priority={index === 0}
+                  />
+                </div>
+                <figcaption className="series-card__caption">
+                  <h2 className="series-card__title">{item.title}</h2>
+                  <p className="series-card__meta">{item.meta}</p>
+                </figcaption>
+              </figure>
+            </Link>
+          )}
         </article>
       ))}
     </div>

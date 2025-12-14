@@ -5,6 +5,7 @@
 */
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { manrope } from "../../fonts/manrope";
 
@@ -29,14 +30,25 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
     <header className="site-header">
       <div className="container site-header__inner">
         {/* Логотип возвращает на нужную часть сайта и закрывает меню на мобильных */}
-        <a
-          href={logoHref}
-          className="site-logo"
-          onClick={() => setMenuOpen(false)}
-        >
-          {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
-          <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
-        </a>
+        {logoHref.startsWith("#") ? (
+          <a
+            href={logoHref}
+            className="site-logo"
+            onClick={() => setMenuOpen(false)}
+          >
+            {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
+            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
+          </a>
+        ) : (
+          <Link
+            href={logoHref}
+            className="site-logo"
+            onClick={() => setMenuOpen(false)}
+          >
+            {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
+            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
+          </Link>
+        )}
 
         {/* Основная навигация по разделам, открывается поверх контента на мобильных */}
         <nav className="site-nav" aria-label="Основная навигация">
@@ -57,18 +69,30 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
             <span className="site-nav__bar"></span>
           </label>
           <ul className="site-nav__list">
-            {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню */}
+            {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню, внутренние переходы идут через Link */}
             {navItems.map((item) => (
               <li className="site-nav__item" key={item.href}>
-                <a
-                  className={`site-nav__link${
-                    item.isActive ? " site-nav__link--active" : ""
-                  }`}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
+                {item.href.startsWith("#") ? (
+                  <a
+                    className={`site-nav__link${
+                      item.isActive ? " site-nav__link--active" : ""
+                    }`}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    className={`site-nav__link${
+                      item.isActive ? " site-nav__link--active" : ""
+                    }`}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

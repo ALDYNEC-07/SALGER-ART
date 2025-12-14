@@ -51,7 +51,7 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
     image: work.image,
     alt: work.alt,
     href: "#series",
-    sizes: "(max-width: 640px) 92vw, (max-width: 1200px) 48vw, 420px",
+    sizes: "(max-width: 640px) 94vw, (max-width: 1200px) 62vw, 640px",
   }));
 
   return (

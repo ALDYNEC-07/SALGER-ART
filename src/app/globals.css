@@ -196,6 +196,8 @@ h3 {
   height: var(--header-height);
   padding: 0;
   background: transparent;
+  border: none;
+  appearance: none;
   cursor: pointer;
   color: #111111;
   gap: 6px;
@@ -628,8 +630,14 @@ body:has(#nav-toggle:checked) {
   border-radius: 1rem;
   padding-top: 70%; /* отношение сторон */
   overflow: hidden;
-  background-color: #e5e5e5;
-  transition: transform 300ms ease, box-shadow 300ms ease, filter 300ms ease;
+  background-color: #f3f3f3;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  transition: transform 300ms ease, box-shadow 300ms ease, filter 300ms ease, border-color 300ms ease;
+}
+
+.series-card.is-active .series-card__image-placeholder {
+  animation: heroZoom 18s ease-out forwards;
 }
 
 .series-card__image {
@@ -661,6 +669,8 @@ body:has(#nav-toggle:checked) {
 /* имитация hover-эффекта */
 .series-card__link:hover .series-card__image-placeholder {
   transform: scale(1.02);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.09);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -785,11 +795,43 @@ body:has(#nav-toggle:checked) {
   flex: 0 0 auto;
 }
 
-.about-media__placeholder {
-  border-radius: 1rem;
+.about-media__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
   width: 100%;
-  padding-top: 80%;
-  background-color: #e5e5e5;
+  min-height: 14.25rem;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.72), rgba(245, 245, 245, 0) 62%),
+    linear-gradient(135deg, #f9f9f7, #efefec);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  animation: heroZoom 18s ease-out forwards;
+}
+
+.about-media__frame::after {
+  content: "";
+  position: absolute;
+  inset: var(--space-xs);
+  border-radius: inherit;
+  background: radial-gradient(circle at 52% 46%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 70%);
+  filter: blur(var(--hero-frame-blur));
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.about-media__placeholder {
+  position: absolute;
+  inset: 10px;
+  border-radius: calc(1.5rem - 10px);
+  overflow: hidden;
+}
+
+.about-media__image {
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .about-media__caption {

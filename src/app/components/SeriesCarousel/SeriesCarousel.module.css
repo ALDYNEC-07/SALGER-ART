@@ -17,7 +17,7 @@
 .rail::before,
 .rail::after {
   content: "";
-  flex: 0 0 calc((100% - clamp(260px, 70vw, 520px)) / 2);
+  flex: 0 0 calc((100% - clamp(300px, 72vw, 640px)) / 2);
 }
 
 .rail::-webkit-scrollbar {
@@ -36,7 +36,7 @@
 .card {
   display: flex;
   flex: 0 0 auto;
-  width: clamp(260px, 70vw, 520px);
+  width: clamp(300px, 72vw, 640px);
   scroll-snap-align: center;
   scroll-snap-stop: always;
   transition: filter 320ms ease, opacity 320ms ease, transform 320ms ease;

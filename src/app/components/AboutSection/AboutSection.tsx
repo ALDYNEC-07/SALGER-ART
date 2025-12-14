@@ -1,12 +1,9 @@
 /* 
  Этот файл описывает раздел с манифестом проекта.
- Он показывает текстовую колонку с идеей галереи и место под иллюстрацию автора.
- Он позволяет посетителю быстро понять посыл проекта и прочитать благодарность.
+ Он показывает короткое описание галереи в обрамлении.
+ Он помогает посетителю за пару строк понять, что это за пространство.
 */
 
-import Image from "next/image";
-/* Портрет автора для блока рядом с манифестом */
-import authorImage from "../../assets/Author.jpg";
 import styles from "./AboutSection.module.css";
 
 export function AboutSection() {
@@ -27,61 +24,30 @@ export function AboutSection() {
 
           <div className="page__body">
             <div className={styles.aboutLayout}>
-              {/* Текст манифеста */}
+              {/* Колонка с коротким описанием галереи */}
               <div className={styles.manifestText}>
-                <p className={styles.manifestLead}>«В тишине рождается образ».</p>
+                {/* Карточка с манифестом, оформленная в фирменной рамке */}
+                <div className={styles.manifestFrame}>
+                  <p className={styles.manifestLabel}>SALGER ART</p>
+                  <p className={styles.manifestLead}>
+                    SALGER ART — это личная онлайн-галерея минималистичных цифровых работ,
+                    где остаётся только главное: форма, пауза и внимательный взгляд.
+                  </p>
+                </div>
 
-                <p>
-                  Этот онлайн-проект родился из усталости от визуального шума.
-                  Я захотел создать пространство, где изображение дышит, а
-                  зрителю не нужно торопиться.
-                </p>
-
-                <p>
-                  <strong>«Искусство тишины»</strong> — не витрина и не реклама.
-                  Это личная галерея цифровых работ, собранных вокруг одной идеи:
-                  в минимализме остается только главное, и именно оно звучит
-                  громче всего.
-                </p>
-
-                <p>
-                  Мне важно, чтобы вы могли вернуться к этим изображениям так же,
-                  как возвращаются к любимым залам музея: без суеты, без
-                  отвлекающих баннеров, без навязчивых подсказок. Просто
-                  созерцание и короткие слова там, где они действительно нужны.
-                </p>
-
-                <p>
-                  Если вам близки тишина, пауза и внимательное отношение
-                  к деталям — вы в правильном месте.
-                </p>
-
-                <p className={styles.manifestSignature}>Спасибо за внимание к моему искусству. Присоединяйтесь к тишине.</p>
+                {/* Три опорные мысли, вынесенные в небольшие рамки */}
+                <div className={styles.manifestPills} role="list">
+                  <span className={styles.manifestPill} role="listitem">
+                    форма
+                  </span>
+                  <span className={styles.manifestPill} role="listitem">
+                    пауза
+                  </span>
+                  <span className={styles.manifestPill} role="listitem">
+                    внимательный взгляд
+                  </span>
+                </div>
               </div>
-
-              {/* Портрет автора рядом с текстом манифеста */}
-              <aside
-                className={styles.aboutMedia}
-                aria-label="Фотография или иллюстрация автора"
-              >
-                <figure className={styles.aboutMediaFigure}>
-                  <div className={styles.aboutMediaFrame}>
-                    <div className={styles.aboutMediaPlaceholder}>
-                      <Image
-                        src={authorImage}
-                        alt="Портрет автора проекта"
-                        fill
-                        sizes="(max-width: 960px) 100vw, 160px"
-                        className={styles.aboutMediaImage}
-                        priority
-                      />
-                    </div>
-                  </div>
-                  <figcaption className={styles.aboutMediaCaption}>
-                    Автор проекта на фоне мастерской.
-                  </figcaption>
-                </figure>
-              </aside>
             </div>
           </div>
         </div>

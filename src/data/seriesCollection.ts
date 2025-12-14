@@ -24,9 +24,6 @@ import SvechaBookImage from "../app/assets/SvechaBook.png";
 import MoreBookImage from "../app/assets/MoreBook.png";
 import PrirodaBookImage from "../app/assets/PrirodaBook.png";
 
-
-import yaycoImage from "../app/assets/Yayco.jpg";
-
 export type SeriesWork = {
   title: string;
   meta: string;
@@ -184,7 +181,7 @@ export const seriesCollection: SeriesEntry[] = [
         title: "Тихая глубина",
         meta: "Читатель проживает тысячу жизней, прежде чем умрёт. Тот, кто не читает, проживает лишь одну — Джордж Р.",
         image: MoreBookImage,
-        alt: "Читатель проживает тысячу жизней, прежде чем умрёт. Тот, кто не читает, проживает лишь одну — Джордж Р",
+        alt: "Читатель проживает тысячу жизней, прежде чем умрёт. Тот, кто не читает, проживает лишь одну — Джордж Р.",
       },
       {
         title: "Книга у ручья",

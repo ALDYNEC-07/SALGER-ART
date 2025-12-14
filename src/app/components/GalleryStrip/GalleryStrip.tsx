@@ -23,7 +23,7 @@ export function GalleryStrip({ series }: GalleryStripProps) {
     image: item.image,
     alt: item.alt,
     href: `/series/${item.slug}`,
-    sizes: "(max-width: 640px) 80vw, (max-width: 1200px) 46vw, 520px",
+    sizes: "(max-width: 640px) 90vw, (max-width: 1200px) 60vw, 640px",
   }));
 
   return (

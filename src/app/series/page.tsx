@@ -11,7 +11,7 @@ import {
   type SiteNavItem,
 } from "../components/SiteHeader/SiteHeader";
 /* Подключаем общий футер, чтобы не копировать его разметку */
-import { SiteFooter } from "../components/SiteFooter";
+import { SiteFooter } from "../components/SiteFooter/SiteFooter";
 /* Подключаем общую карусель карточек, чтобы логика скролла оставалась одинаковой */
 import {
   SeriesCarousel,

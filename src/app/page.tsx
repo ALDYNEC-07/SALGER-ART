@@ -17,7 +17,7 @@ import { GalleryStrip } from "./components/GalleryStrip/GalleryStrip";
 /* Подключаем блок с манифестом проекта, чтобы редактировать текст отдельно */
 import { AboutSection } from "./components/AboutSection/AboutSection";
 /* Подключаем общий футер со ссылками, чтобы не копировать его между страницами */
-import { SiteFooter } from "./components/SiteFooter";
+import { SiteFooter } from "./components/SiteFooter/SiteFooter";
 /* Берём пункты меню из файла настроек, чтобы менять список один раз */
 import { getNavItems } from "./components/navConfig";
 

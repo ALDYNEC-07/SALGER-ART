@@ -135,22 +135,6 @@ h3 {
   font-size: var(--fs-md);
 }
 
-/* Подвал */
-
-.site-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  padding-block: var(--space-m);
-}
-
-.site-footer__inner {
-  font-size: var(--fs-xs);
-  color: #555555;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-s);
-  flex-wrap: wrap;
-}
-
 @keyframes heroZoom {
   from {
     transform: scale(1.02);

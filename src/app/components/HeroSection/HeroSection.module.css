@@ -5,7 +5,8 @@
 .hero {
   position: relative;
   min-height: calc(100vh - var(--header-height));
-  padding-block: clamp(2.5rem, 9vh, 4.5rem);
+  padding-block-start: clamp(1.1rem, 5vh, 3.1rem);
+  padding-block-end: clamp(2.5rem, 9vh, 4.5rem);
 }
 
 @supports (height: 100svh) {

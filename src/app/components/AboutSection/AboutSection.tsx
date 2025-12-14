@@ -71,7 +71,7 @@ export function AboutSection() {
                         src={authorImage}
                         alt="Портрет автора проекта"
                         fill
-                        sizes="(max-width: 960px) 100vw, 220px"
+                        sizes="(max-width: 960px) 100vw, 160px"
                         className={styles.aboutMediaImage}
                         priority
                       />

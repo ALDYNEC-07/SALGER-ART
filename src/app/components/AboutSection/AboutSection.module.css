@@ -40,7 +40,9 @@
 }
 
 .aboutMedia {
-  flex: 0 0 auto;
+  flex: 0 0 14rem;
+  max-width: 14rem;
+  align-self: center;
 }
 
 .aboutMediaFigure {
@@ -104,10 +106,8 @@
   }
 
   .aboutMedia {
-    flex: 0 0 14rem;
-  }
-
-  .aboutMediaFrame {
-    min-height: 3rem;
+    flex: 0 0 10rem;
+    max-width: 10rem;
+    align-self: flex-start;
   }
 }

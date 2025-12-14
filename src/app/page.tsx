@@ -13,6 +13,8 @@ import { HeroSection } from "./components/HeroSection";
 import { SeriesStrip } from "./components/SeriesStrip";
 /* Раздел манифеста вынесен в отдельный компонент, чтобы текст жил отдельно от страницы */
 import { AboutSection } from "./components/AboutSection";
+/* Общий футер вынесен в компонент, чтобы не дублировать верстку на страницах */
+import { SiteFooter } from "./components/SiteFooter";
 
 export default function Home() {
   /* Пункты меню для одностраничной галереи: активный пункт и ссылки на блоки страницы */
@@ -41,12 +43,8 @@ export default function Home() {
         <AboutSection />
       </main>
 
-      <footer className="site-footer">
-        <div className="container site-footer__inner">
-          <div>© Онлайн-галерея «SALGER ART»</div>
-          <div>Контакт: example@email.com</div>
-        </div>
-      </footer>
+      {/* Общий футер вынесен в компонент, чтобы использовать его на всех страницах */}
+      <SiteFooter />
     </>
   );
 }

@@ -14,6 +14,8 @@ import lineImage from "@/app/assets/Line.png";
 import scenaImage from "@/app/assets/Scena.jpg";
 /* Общая шапка вынесена в переиспользуемый компонент, чтобы держать её в одном месте */
 import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
+/* Общий футер вынесен в компонент, чтобы не дублировать его разметку */
+import { SiteFooter } from "../components/SiteFooter";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы с сериями: активным остаётся раздел «Серии» */
@@ -235,12 +237,8 @@ export default function SeriesPage() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="container site-footer__inner">
-          <div>© Онлайн-галерея «SALGER ART»</div>
-          <div>Контакт: example@email.com</div>
-        </div>
-      </footer>
+      {/* Общий футер вынесен в компонент, чтобы использовать на всех страницах серии */}
+      <SiteFooter />
     </>
   );
 }

@@ -10,7 +10,7 @@ import { SiteHeader, type SiteNavItem } from "./components/SiteHeader";
 /* Подключаем главный экран с приветствием, чтобы он не загромождал файл страницы */
 import { HeroSection } from "./components/HeroSection";
 /* Подключаем ленту серий, где видно превью каждой подборки */
-import { SeriesStrip } from "./components/SeriesStrip";
+import { GalleryStrip } from "./components/GalleryStrip";
 /* Подключаем блок с манифестом проекта, чтобы редактировать текст отдельно */
 import { AboutSection } from "./components/AboutSection";
 /* Подключаем общий футер со ссылками, чтобы не копировать его между страницами */
@@ -34,7 +34,7 @@ export default function Home() {
         <HeroSection />
 
         {/* Лента серий с карточками, чтобы перейти к нужной подборке */}
-        <SeriesStrip series={gallerySeriesPreview} />
+        <GalleryStrip series={gallerySeriesPreview} />
 
         {/* Блок манифеста проекта с описанием идеи */}
         <AboutSection />

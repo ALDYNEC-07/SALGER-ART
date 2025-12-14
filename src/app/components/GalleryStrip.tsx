@@ -10,11 +10,11 @@ import {
   type SeriesCarouselItem,
 } from "./SeriesCarousel";
 
-type SeriesStripProps = {
+type GalleryStripProps = {
   series: GallerySeriesItem[];
 };
 
-export function SeriesStrip({ series }: SeriesStripProps) {
+export function GalleryStrip({ series }: GalleryStripProps) {
   /* Готовим карточки галереи с нужными ссылками и размерами изображений для карусели */
   const carouselItems: SeriesCarouselItem[] = series.map((item) => ({
     title: item.title,

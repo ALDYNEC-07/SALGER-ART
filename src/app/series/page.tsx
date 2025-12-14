@@ -17,7 +17,7 @@ import {
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../components/navConfig";
 /* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
-import { seriesWorks } from "../data/seriesWorks";
+import { seriesWorks } from "../../data/seriesWorks";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */

@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
-import krugImage from "../assets/Krug.jpg";
-import lineImage from "../assets/Line.png";
-import scenaImage from "../assets/Scena.jpg";
+import krugImage from "../app/assets/Krug.jpg";
+import lineImage from "../app/assets/Line.png";
+import scenaImage from "../app/assets/Scena.jpg";
 
 /* Структура одной работы серии: название, описание и иллюстрация */
 export type SeriesWork = {

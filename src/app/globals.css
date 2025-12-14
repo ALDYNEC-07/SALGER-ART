@@ -628,8 +628,14 @@ body:has(#nav-toggle:checked) {
   border-radius: 1rem;
   padding-top: 70%; /* отношение сторон */
   overflow: hidden;
-  background-color: #e5e5e5;
-  transition: transform 300ms ease, box-shadow 300ms ease, filter 300ms ease;
+  background-color: #f3f3f3;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  transition: transform 300ms ease, box-shadow 300ms ease, filter 300ms ease, border-color 300ms ease;
+}
+
+.series-card.is-active .series-card__image-placeholder {
+  animation: heroZoom 18s ease-out forwards;
 }
 
 .series-card__image {
@@ -661,6 +667,8 @@ body:has(#nav-toggle:checked) {
 /* имитация hover-эффекта */
 .series-card__link:hover .series-card__image-placeholder {
   transform: scale(1.02);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.09);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {

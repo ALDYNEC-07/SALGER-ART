@@ -4,7 +4,7 @@
 Он позволяет листать карточки стрелками и подсвечивать нужную по наведению или фокусу.
 */
 
-import type { GallerySeriesItem } from "../../data/gallerySeries";
+import type { GallerySeriesItem } from "../../../data/gallerySeries";
 import {
   SeriesCarousel,
   type SeriesCarouselItem,
@@ -22,7 +22,7 @@ export function GalleryStrip({ series }: GalleryStripProps) {
     meta: item.meta,
     image: item.image,
     alt: item.alt,
-    href: "/series",
+    href: `/series/${item.slug}`,
     sizes: "(max-width: 640px) 80vw, (max-width: 1200px) 46vw, 520px",
   }));
 

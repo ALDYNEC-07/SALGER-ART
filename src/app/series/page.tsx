@@ -6,7 +6,10 @@
 
 import Link from "next/link";
 /* Берём готовую шапку сайта (логотип и меню) из одного места */
-import { SiteHeader, type SiteNavItem } from "../components/SiteHeader";
+import {
+  SiteHeader,
+  type SiteNavItem,
+} from "../components/SiteHeader/SiteHeader";
 /* Подключаем общий футер, чтобы не копировать его разметку */
 import { SiteFooter } from "../components/SiteFooter";
 /* Подключаем общую карусель карточек, чтобы логика скролла оставалась одинаковой */

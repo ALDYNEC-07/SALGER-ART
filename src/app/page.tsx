@@ -6,7 +6,10 @@
 /* Берём данные галереи из отдельного файла, чтобы добавлять серии без правки страницы */
 import { gallerySeries } from "../data/gallerySeries";
 /* Подключаем готовую шапку сайта с логотипом и меню из одного места */
-import { SiteHeader, type SiteNavItem } from "./components/SiteHeader";
+import {
+  SiteHeader,
+  type SiteNavItem,
+} from "./components/SiteHeader/SiteHeader";
 /* Подключаем главный экран с приветствием, чтобы он не загромождал файл страницы */
 import { HeroSection } from "./components/HeroSection";
 /* Подключаем ленту серий, где видно превью каждой подборки */

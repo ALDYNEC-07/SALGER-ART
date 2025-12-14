@@ -6,8 +6,9 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
-import { manrope } from "../../fonts/manrope";
+import { useEffect, useId, useState } from "react";
+import { manrope } from "../../../fonts/manrope";
+import styles from "./SiteHeader.module.css";
 
 export type SiteNavItem = {
   label: string;
@@ -28,37 +29,47 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
   /* Назначаем ID переключателю и списку по этому коду, чтобы aria-связка оставалась уникальной */
   const navToggleId = `${navId}-toggle`;
   const navListId = `${navId}-list`;
+  /* Когда меню открыто, ставим класс на body, чтобы заблокировать прокрутку фона на мобильных */
+  useEffect(() => {
+    const body = document.body;
+    if (menuOpen) {
+      body.classList.add("site-nav-open");
+    } else {
+      body.classList.remove("site-nav-open");
+    }
+    return () => body.classList.remove("site-nav-open");
+  }, [menuOpen]);
 
   return (
-    <header className="site-header">
-      <div className="container site-header__inner">
+    <header className={styles.header}>
+      <div className={`container ${styles.headerInner}`}>
         {/* Логотип возвращает на нужную часть сайта и закрывает меню на мобильных */}
         {logoHref.startsWith("#") ? (
           <a
             href={logoHref}
-            className="site-logo"
+            className={styles.logo}
             onClick={() => setMenuOpen(false)}
           >
             {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
-            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
+            <span className={`${manrope.className} ${styles.logoText}`}>SALGER ART</span>
           </a>
         ) : (
           <Link
             href={logoHref}
-            className="site-logo"
+            className={styles.logo}
             onClick={() => setMenuOpen(false)}
           >
             {/* Логотип с акцентным шрифтом Manrope, чтобы он выделял бренд */}
-            <span className={`${manrope.className} site-logo__text`}>SALGER ART</span>
+            <span className={`${manrope.className} ${styles.logoText}`}>SALGER ART</span>
           </Link>
         )}
 
         {/* Основная навигация по разделам, открывается поверх контента на мобильных */}
-        <nav className="site-nav" aria-label="Основная навигация">
+        <nav className={styles.nav} aria-label="Основная навигация">
           <input
             type="checkbox"
             id={navToggleId}
-            className="site-nav__checkbox"
+            className={styles.navCheckbox}
             aria-hidden="true"
             checked={menuOpen}
             onChange={() => setMenuOpen((prev) => !prev)}
@@ -66,42 +77,47 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
           {/* Кнопка раскрывает и сворачивает список: экранный диктор слышит статус и знает, какой блок управляется */}
           <button
             type="button"
-            className="site-nav__toggle"
+            className={styles.navToggle}
             aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={menuOpen}
             aria-controls={navListId}
             onClick={() => setMenuOpen((prev) => !prev)}
           >
-            <span className="site-nav__bar"></span>
-            <span className="site-nav__bar"></span>
+            <span className={styles.navBar}></span>
+            <span className={styles.navBar}></span>
           </button>
-          <ul id={navListId} className="site-nav__list">
+          <ul id={navListId} className={styles.navList}>
             {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню, внутренние переходы идут через Link */}
-            {navItems.map((item) => (
-              <li className="site-nav__item" key={item.href}>
-                {item.href.startsWith("#") ? (
-                  <a
-                    className={`site-nav__link${
-                      item.isActive ? " site-nav__link--active" : ""
-                    }`}
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <Link
-                    className={`site-nav__link${
-                      item.isActive ? " site-nav__link--active" : ""
-                    }`}
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const linkClassName = [
+                styles.navLink,
+                item.isActive ? styles.navLinkActive : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              return (
+                <li className={styles.navItem} key={item.href}>
+                  {item.href.startsWith("#") ? (
+                    <a
+                      className={linkClassName}
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      className={linkClassName}
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>

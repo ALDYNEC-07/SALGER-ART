@@ -54,6 +54,8 @@ export function SeriesCarousel({
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items.map((item) => `${item.title}-${item.href}`).join("|");
+  /* Держим индекс в безопасных пределах, даже если список карточек сократился */
+  const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
   /* Обновляем реакцию на изменение системной настройки движения без перезагрузки страницы */
   useEffect(() => {
@@ -82,11 +84,6 @@ export function SeriesCarousel({
   useEffect(() => {
     cardRefs.current.length = items.length;
     visibilityRatios.current = new Array(items.length).fill(0);
-    setActiveIndex((prevIndex) => {
-      if (items.length === 0) return 0;
-      const safeIndex = Math.min(prevIndex, items.length - 1);
-      return prevIndex === safeIndex ? prevIndex : safeIndex;
-    });
   }, [items.length, itemsSignature]);
 
   /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
@@ -155,13 +152,13 @@ export function SeriesCarousel({
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      const nextIndex = Math.min(activeIndex + 1, cardRefs.current.length - 1);
+      const nextIndex = Math.min(safeActiveIndex + 1, cardRefs.current.length - 1);
       scrollToCard(nextIndex);
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      const prevIndex = Math.max(activeIndex - 1, 0);
+      const prevIndex = Math.max(safeActiveIndex - 1, 0);
       scrollToCard(prevIndex);
     }
   };
@@ -212,10 +209,10 @@ export function SeriesCarousel({
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
             className={[
               styles.card,
-              activeIndex === index ? styles.cardActive : styles.cardDim,
+              safeActiveIndex === index ? styles.cardActive : styles.cardDim,
             ].join(" ")}
             role="listitem"
-            aria-current={activeIndex === index ? "true" : undefined}
+            aria-current={safeActiveIndex === index ? "true" : undefined}
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;

@@ -34,7 +34,7 @@ export function SeriesCarousel({
   tabIndex = 0,
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
-  const cardRefs = useRef<HTMLElement[]>([]);
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
   /* Фиксируем контейнер полосы, чтобы отслеживать, какие карточки видны в данный момент */
   const railRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
@@ -46,6 +46,9 @@ export function SeriesCarousel({
     }
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   });
+
+  /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
+  const itemsSignature = items.map((item) => `${item.title}-${item.href}`).join("|");
 
   /* Обновляем реакцию на изменение системной настройки движения без перезагрузки страницы */
   useEffect(() => {
@@ -69,6 +72,16 @@ export function SeriesCarousel({
       }
     };
   }, []);
+
+  /* Очищаем устаревшие ссылки на карточки и не даём активному индексу выходить за пределы новых данных */
+  useEffect(() => {
+    cardRefs.current.length = items.length;
+    setActiveIndex((prevIndex) => {
+      if (items.length === 0) return 0;
+      const safeIndex = Math.min(prevIndex, items.length - 1);
+      return prevIndex === safeIndex ? prevIndex : safeIndex;
+    });
+  }, [items.length, itemsSignature]);
 
   /* Отмечаем карточку, которая занимает центр видимой области, чтобы подсветить её */
   useEffect(() => {
@@ -94,13 +107,12 @@ export function SeriesCarousel({
     );
 
     cardRefs.current.forEach((card) => {
-      if (card) {
-        observer.observe(card);
-      }
+      if (!card) return;
+      observer.observe(card);
     });
 
     return () => observer.disconnect();
-  }, [items.length, items]);
+  }, [items.length, itemsSignature]);
 
   /* Переключаем визуальный акцент между карточками */
   useEffect(() => {
@@ -157,6 +169,8 @@ export function SeriesCarousel({
           ref={(node) => {
             if (node) {
               cardRefs.current[index] = node;
+            } else {
+              cardRefs.current[index] = null;
             }
           }}
           /* При наведении сразу делаем карточку чёткой */

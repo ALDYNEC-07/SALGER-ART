@@ -99,7 +99,7 @@ export function SeriesCarousel({
     });
 
     return () => observer.disconnect();
-  }, [items.length]);
+  }, [items.length, items]);
 
   /* Переключаем визуальный акцент между карточками */
   useEffect(() => {

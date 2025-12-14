@@ -158,14 +158,17 @@ export function SeriesCarousel({
     <div
       className={railClassName}
       aria-label={ariaLabel}
+      role="list"
       ref={railRef}
       onKeyDown={handleKeyDown}
       tabIndex={tabIndex}
     >
       {items.map((item, index) => (
         <article
-          key={item.title}
+          key={`${item.href}-${item.title}`}
           className="series-card"
+          role="listitem"
+          aria-current={activeIndex === index ? "true" : undefined}
           ref={(node) => {
             if (node) {
               cardRefs.current[index] = node;

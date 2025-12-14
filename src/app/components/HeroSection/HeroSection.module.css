@@ -35,7 +35,9 @@
 .heroMedia {
   position: relative;
   border-radius: 1.5rem;
-  min-height: 14.25rem;
+  width: min(76vw, 18rem);
+  min-height: clamp(20.5rem, 86vw, 26.5rem);
+  margin-inline: auto;
   overflow: hidden;
   background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.72), rgba(245, 245, 245, 0) 62%),
     linear-gradient(135deg, #f9f9f7, #efefec);
@@ -66,7 +68,7 @@
   border-radius: inherit;
 }
 
-.heroLogo {
+.heroPortrait {
   object-fit: cover;
   border-radius: inherit;
 }
@@ -173,8 +175,9 @@
   }
 
   .heroMedia {
-    flex: 3;
-    min-height: 20.5rem;
+    flex: 2.6;
+    max-width: clamp(22rem, 42vw, 28rem);
+    min-height: 22rem;
   }
 
   .heroContent {
@@ -189,7 +192,8 @@
 
 @media (min-width: 1024px) {
   .heroMedia {
-    min-height: 26rem;
+    max-width: clamp(24rem, 36vw, 30rem);
+    min-height: 28rem;
   }
 
   .heroContent {

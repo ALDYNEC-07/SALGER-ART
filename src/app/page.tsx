@@ -11,7 +11,7 @@ import {
   type SiteNavItem,
 } from "./components/SiteHeader/SiteHeader";
 /* Подключаем главный экран с приветствием, чтобы он не загромождал файл страницы */
-import { HeroSection } from "./components/HeroSection";
+import { HeroSection } from "./components/HeroSection/HeroSection";
 /* Подключаем ленту серий, где видно превью каждой подборки */
 import { GalleryStrip } from "./components/GalleryStrip";
 /* Подключаем блок с манифестом проекта, чтобы редактировать текст отдельно */

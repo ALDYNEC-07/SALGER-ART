@@ -25,6 +25,8 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   /* Фиксируем идентификатор, потому что стили для оверлея навигации привязаны к нему */
   const navToggleId = "nav-toggle";
+  /* Фиксируем список для aria-controls, чтобы скринридер понимал, что разворачивает кнопка */
+  const navListId = "site-nav-list";
 
   return (
     <header className="site-header">
@@ -60,15 +62,19 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
             checked={menuOpen}
             onChange={() => setMenuOpen((prev) => !prev)}
           />
-          <label
-            htmlFor={navToggleId}
+          {/* Кнопка раскрывает и сворачивает список: экранный диктор слышит статус и знает, какой блок управляется */}
+          <button
+            type="button"
             className="site-nav__toggle"
-            aria-label="Открыть меню"
+            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={menuOpen}
+            aria-controls={navListId}
+            onClick={() => setMenuOpen((prev) => !prev)}
           >
             <span className="site-nav__bar"></span>
             <span className="site-nav__bar"></span>
-          </label>
-          <ul className="site-nav__list">
+          </button>
+          <ul id={navListId} className="site-nav__list">
             {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню, внутренние переходы идут через Link */}
             {navItems.map((item) => (
               <li className="site-nav__item" key={item.href}>

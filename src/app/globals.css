@@ -196,6 +196,8 @@ h3 {
   height: var(--header-height);
   padding: 0;
   background: transparent;
+  border: none;
+  appearance: none;
   cursor: pointer;
   color: #111111;
   gap: 6px;

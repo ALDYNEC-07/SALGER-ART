@@ -6,7 +6,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { manrope } from "../../fonts/manrope";
 
 export type SiteNavItem = {
@@ -23,10 +23,11 @@ type SiteHeaderProps = {
 export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
   /* Простое переключение меню, чтобы оверлей открывался и закрывался без сбоев */
   const [menuOpen, setMenuOpen] = useState(false);
-  /* Фиксируем идентификатор, потому что стили для оверлея навигации привязаны к нему */
-  const navToggleId = "nav-toggle";
-  /* Фиксируем список для aria-controls, чтобы скринридер понимал, что разворачивает кнопка */
-  const navListId = "site-nav-list";
+  /* Берем уникальный код для этой шапки, чтобы его ID не пересекались в превью или встраивании */
+  const navId = useId();
+  /* Назначаем ID переключателю и списку по этому коду, чтобы aria-связка оставалась уникальной */
+  const navToggleId = `${navId}-toggle`;
+  const navListId = `${navId}-list`;
 
   return (
     <header className="site-header">

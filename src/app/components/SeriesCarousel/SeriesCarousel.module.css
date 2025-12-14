@@ -79,7 +79,7 @@
 }
 
 .cardActive .imagePlaceholder {
-  animation: heroZoom 18s ease-out forwards;
+  animation: cardZoom 18s ease-out forwards;
 }
 
 .image {
@@ -116,6 +116,15 @@
   transform: scale(1.02);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.09);
   border-color: rgba(0, 0, 0, 0.08);
+}
+
+@keyframes cardZoom {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.08);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -144,98 +144,9 @@ h3 {
   }
 }
 
-/* Блок-«якорь» сразу под Hero, чтобы стрелка имела цель */
-
-.home-next {
-  padding-block: var(--space-3xl);
-}
-
-.home-next__inner {
-  max-width: var(--content-max-width);
-  margin-inline: auto;
-  text-align: center;
-}
-
-.home-next__kicker {
-  margin: 0 0 var(--space-xs);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.home-next__title {
-  margin: 0 0 var(--space-s);
-  font-size: var(--fs-xl);
-  line-height: 1.2;
-}
-
-.home-next__text {
-  margin: 0 0 var(--space-m);
-  font-size: var(--fs-md);
-}
-
-.home-next__link {
-  font-size: var(--fs-sm);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
 /* ===== Галерея серий ===== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-}
-
-/* ===== Страница серии ===== */
-
-.breadcrumbs {
-  margin-bottom: var(--space-m);
-  font-size: var(--fs-sm);
-  color: #555555;
-}
-
-.breadcrumbs a {
-  text-decoration: none;
-}
-
-.breadcrumbs span[aria-current="page"] {
-  font-weight: 500;
-}
-
-.series-header {
-  margin-bottom: var(--space-2xl);
-}
-
-.series-header__title {
-  margin: 0 0 var(--space-xs);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-}
-
-.series-header__meta {
-  margin: 0 0 var(--space-s);
-  font-size: var(--fs-sm);
-  color: #555555;
-}
-
-.series-header__intro {
-  margin: 0;
-  max-width: 34rem;
-  font-size: var(--fs-md);
-  font-style: italic;
-}
-
-.series-works {
-  overflow: visible;
-}
-
-/* Завершение серии */
-
-.series-footer {
-  margin-top: var(--space-3xl);
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-m);
-  flex-wrap: wrap;
-  font-size: var(--fs-sm);
 }

@@ -21,6 +21,7 @@ import {
 import { getNavItems } from "../components/navConfig";
 /* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
 import { seriesWorks } from "../../data/seriesWorks";
+import styles from "./SeriesPage.module.css";
 
 export default function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
@@ -44,23 +45,23 @@ export default function SeriesPage() {
         {/* Отдельная страница серии с хлебными крошками и полосой карточек */}
         <section
           id="series"
-          className="page page--series"
+          className={`page ${styles.pageSeries}`}
           aria-labelledby="series-title"
         >
           <div className="container">
             {/* Хлебные крошки на случай возврата в галерею */}
-            <nav className="breadcrumbs" aria-label="Хлебные крошки">
+            <nav className={styles.breadcrumbs} aria-label="Хлебные крошки">
               <Link href="/#gallery">Галерея</Link>
               <span aria-hidden="true"> / </span>
               <span aria-current="page">Северное сияние</span>
             </nav>
 
-            <header className="series-header">
-              <h1 id="series-title" className="series-header__title">
+            <header className={styles.seriesHeader}>
+              <h1 id="series-title" className={styles.seriesHeaderTitle}>
                 Северное сияние
               </h1>
-              <p className="series-header__meta">Серия цифровых работ, 2024</p>
-              <p className="series-header__intro">
+              <p className={styles.seriesHeaderMeta}>Серия цифровых работ, 2024</p>
+              <p className={styles.seriesHeaderIntro}>
                 Короткий манифест серии: одна–две строки о настроении и идее,
                 без длинных описаний.
               </p>
@@ -68,7 +69,7 @@ export default function SeriesPage() {
           </div>
 
           {/* Полоса карточек серии на всю ширину экрана с эффектом размытия соседей */}
-          <div className="series-works">
+          <div className={styles.seriesWorks}>
             <SeriesCarousel
               items={carouselItems}
               ariaLabel="Работы серии «Северное сияние»"

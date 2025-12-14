@@ -4,6 +4,10 @@
  Он позволяет посетителю быстро понять посыл проекта и прочитать благодарность.
 */
 
+import Image from "next/image";
+/* Портрет автора для блока рядом с манифестом */
+import authorImage from "../assets/Author.jpg";
+
 export function AboutSection() {
   return (
     <>
@@ -52,15 +56,28 @@ export function AboutSection() {
                 </p>
               </div>
 
-              {/* Иллюстрация или портрет рядом с текстом манифеста */}
+              {/* Портрет автора рядом с текстом манифеста */}
               <aside
                 className="about-media"
                 aria-label="Фотография или иллюстрация автора"
               >
-                <div className="about-media__placeholder" aria-hidden="true"></div>
-                <p className="about-media__caption">
-                  Здесь может быть нейтральный портрет автора или абстрактное изображение.
-                </p>
+                <figure className="about-media__figure">
+                  <div className="about-media__frame">
+                    <div className="about-media__placeholder">
+                      <Image
+                        src={authorImage}
+                        alt="Портрет автора проекта"
+                        fill
+                        sizes="(max-width: 960px) 100vw, 220px"
+                        className="about-media__image"
+                        priority
+                      />
+                    </div>
+                  </div>
+                  <figcaption className="about-media__caption">
+                    Автор проекта на фоне мастерской.
+                  </figcaption>
+                </figure>
               </aside>
             </div>
           </div>

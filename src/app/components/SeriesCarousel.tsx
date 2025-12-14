@@ -172,74 +172,66 @@ export function SeriesCarousel({
       onKeyDown={handleKeyDown}
       tabIndex={tabIndex}
     >
-      {items.map((item, index) => (
-        <article
-          key={`${item.href}-${item.title}`}
-          /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
-          className={`series-card ${activeIndex === index ? "is-active" : "is-dim"}`}
-          role="listitem"
-          aria-current={activeIndex === index ? "true" : undefined}
-          ref={(node) => {
-            if (node) {
-              cardRefs.current[index] = node;
-            } else {
-              cardRefs.current[index] = null;
-            }
-          }}
-          /* При наведении сразу делаем карточку чёткой */
-          onMouseEnter={() => setActiveIndex(index)}
-        >
-          {item.href.startsWith("#") ? (
-            <a
-              href={item.href}
-              className="series-card__link"
-              /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
-              onFocus={() => setActiveIndex(index)}
-            >
-              <figure className="series-card__figure">
-                <div className="series-card__image-placeholder">
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    sizes={item.sizes}
-                    className="series-card__image"
-                    priority={index === 0}
-                  />
-                </div>
-                <figcaption className="series-card__caption">
-                  <h2 className="series-card__title">{item.title}</h2>
-                  <p className="series-card__meta">{item.meta}</p>
-                </figcaption>
-              </figure>
-            </a>
-          ) : (
-            <Link
-              href={item.href}
-              className="series-card__link"
-              /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
-              onFocus={() => setActiveIndex(index)}
-            >
-              <figure className="series-card__figure">
-                <div className="series-card__image-placeholder">
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    sizes={item.sizes}
-                    className="series-card__image"
-                    priority={index === 0}
-                  />
-                </div>
-                <figcaption className="series-card__caption">
-                  <h2 className="series-card__title">{item.title}</h2>
-                  <p className="series-card__meta">{item.meta}</p>
-                </figcaption>
-              </figure>
-            </Link>
-          )}
-        </article>
-      ))}
+      {items.map((item, index) => {
+        /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
+        const cardContent = (
+          <figure className="series-card__figure">
+            <div className="series-card__image-placeholder">
+              <Image
+                src={item.image}
+                alt={item.alt}
+                fill
+                sizes={item.sizes}
+                className="series-card__image"
+                priority={index === 0}
+              />
+            </div>
+            <figcaption className="series-card__caption">
+              <h2 className="series-card__title">{item.title}</h2>
+              <p className="series-card__meta">{item.meta}</p>
+            </figcaption>
+          </figure>
+        );
+
+        return (
+          <article
+            key={`${item.href}-${item.title}`}
+            /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
+            className={`series-card ${activeIndex === index ? "is-active" : "is-dim"}`}
+            role="listitem"
+            aria-current={activeIndex === index ? "true" : undefined}
+            ref={(node) => {
+              if (node) {
+                cardRefs.current[index] = node;
+              } else {
+                cardRefs.current[index] = null;
+              }
+            }}
+            /* При наведении сразу делаем карточку чёткой */
+            onMouseEnter={() => setActiveIndex(index)}
+          >
+            {item.href.startsWith("#") ? (
+              <a
+                href={item.href}
+                className="series-card__link"
+                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                onFocus={() => setActiveIndex(index)}
+              >
+                {cardContent}
+              </a>
+            ) : (
+              <Link
+                href={item.href}
+                className="series-card__link"
+                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                onFocus={() => setActiveIndex(index)}
+              >
+                {cardContent}
+              </Link>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }

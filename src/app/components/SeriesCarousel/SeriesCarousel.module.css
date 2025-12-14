@@ -39,7 +39,7 @@
   width: clamp(300px, 72vw, 640px);
   scroll-snap-align: center;
   scroll-snap-stop: always;
-  transition: filter 320ms ease, opacity 320ms ease, transform 320ms ease;
+  transition: filter 480ms ease, opacity 480ms ease, transform 320ms ease;
 }
 
 .cardDim {
@@ -89,6 +89,17 @@
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+  transition: filter 520ms ease, opacity 520ms ease;
+}
+
+.cardDim .image {
+  filter: blur(calc(var(--hero-frame-blur) * 0.85));
+  opacity: 0.6;
+}
+
+.cardActive .image {
+  filter: blur(0);
+  opacity: 1;
 }
 
 .caption {
@@ -134,6 +145,10 @@
 
   .card,
   .imagePlaceholder {
+    transition: none;
+  }
+
+  .image {
     transition: none;
   }
 }

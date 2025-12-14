@@ -18,7 +18,7 @@ import {
   type SeriesCarouselItem,
 } from "../components/SeriesCarousel/SeriesCarousel";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
-import { getNavItems } from "../components/navConfig";
+import { getNavItems } from "../config/navConfig";
 /* Берём список работ серии из одного файла, чтобы карточки совпадали на всех страницах */
 import { seriesWorks } from "../../data/seriesWorks";
 import styles from "./SeriesPage.module.css";

@@ -19,7 +19,7 @@ import { AboutSection } from "./components/AboutSection/AboutSection";
 /* Подключаем общий футер со ссылками, чтобы не копировать его между страницами */
 import { SiteFooter } from "./components/SiteFooter/SiteFooter";
 /* Берём пункты меню из файла настроек, чтобы менять список один раз */
-import { getNavItems } from "./components/navConfig";
+import { getNavItems } from "./config/navConfig";
 
 export default function Home() {
   /* Получаем пункты меню для этой страницы из общего списка */

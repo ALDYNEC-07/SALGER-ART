@@ -15,7 +15,7 @@ import { HeroSection } from "./components/HeroSection/HeroSection";
 /* Подключаем ленту серий, где видно превью каждой подборки */
 import { GalleryStrip } from "./components/GalleryStrip/GalleryStrip";
 /* Подключаем блок с манифестом проекта, чтобы редактировать текст отдельно */
-import { AboutSection } from "./components/AboutSection";
+import { AboutSection } from "./components/AboutSection/AboutSection";
 /* Подключаем общий футер со ссылками, чтобы не копировать его между страницами */
 import { SiteFooter } from "./components/SiteFooter";
 /* Берём пункты меню из файла настроек, чтобы менять список один раз */

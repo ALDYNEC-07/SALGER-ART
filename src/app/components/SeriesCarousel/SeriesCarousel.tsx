@@ -17,7 +17,7 @@ export type SeriesCarouselItem = {
   meta: string;
   image: StaticImageData;
   alt: string;
-  href: string;
+  href?: string;
   sizes: string;
 };
 
@@ -53,7 +53,9 @@ export function SeriesCarousel({
   });
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
-  const itemsSignature = items.map((item) => `${item.title}-${item.href}`).join("|");
+  const itemsSignature = items
+    .map((item) => `${item.title}-${item.href ?? "nolink"}`)
+    .join("|");
   /* Держим индекс в безопасных пределах, даже если список карточек сократился */
   const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
@@ -203,9 +205,14 @@ export function SeriesCarousel({
         /* Один общий обработчик снимает размытие при наведении или фокусе */
         const activateCard = () => setActiveIndex(index);
 
+        const href = item.href ?? "";
+        const cardKey = href ? `${href}-${item.title}` : item.title;
+        const hasLink = href.length > 0;
+        const isHashLink = hasLink && href.startsWith("#");
+
         return (
           <article
-            key={`${item.href}-${item.title}`}
+            key={cardKey}
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
             className={[
               styles.card,
@@ -223,9 +230,14 @@ export function SeriesCarousel({
             /* При наведении сразу делаем карточку чёткой */
             onMouseEnter={activateCard}
           >
-            {item.href.startsWith("#") ? (
+            {/* Если у карточки нет перехода, оставляем её без ссылки, чтобы не было клика */}
+            {!hasLink ? (
+              <div className={styles.cardLink} tabIndex={0} onFocus={activateCard}>
+                {cardContent}
+              </div>
+            ) : isHashLink ? (
               <a
-                href={item.href}
+                href={href}
                 className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}
@@ -234,7 +246,7 @@ export function SeriesCarousel({
               </a>
             ) : (
               <Link
-                href={item.href}
+                href={href}
                 className={styles.cardLink}
                 /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
                 onFocus={activateCard}

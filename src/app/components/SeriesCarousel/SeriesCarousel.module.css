@@ -1,5 +1,5 @@
 .rail {
-  --card-width: clamp(280px, 68vw, 600px);
+  --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
 
   width: 100vw;
@@ -46,7 +46,6 @@
 }
 
 .cardDim {
-  filter: blur(var(--hero-frame-blur));
   opacity: 0.35;
   transform: scale(0.96);
 }
@@ -158,8 +157,8 @@
 
 @media (max-width: 768px) {
   .rail {
-    --card-width: clamp(300px, 88vw, 560px);
+    --card-width: calc(clamp(260px, 82vw, 520px) - 10px);
     --card-aspect: 78%;
-    gap: clamp(20px, 6vw, 32px);
+    gap: clamp(14px, 4vw, 26px);
   }
 }

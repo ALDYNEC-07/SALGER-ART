@@ -1,11 +1,12 @@
 .rail {
-  --card-width: clamp(280px, 68vw, 600px);
+  --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
+  --rail-gap: clamp(16px, 3vw, 40px);
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
-  gap: clamp(16px, 3vw, 40px);
+  gap: var(--rail-gap);
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: var(--space-m);
@@ -20,7 +21,7 @@
 .rail::before,
 .rail::after {
   content: "";
-  flex: 0 0 calc((100% - var(--card-width)) / 2);
+  flex: 0 0 calc((100% - var(--card-width)) / 2 - var(--rail-gap));
 }
 
 .rail::-webkit-scrollbar {
@@ -37,6 +38,7 @@
 }
 
 .card {
+  --card-visibility: 0;
   display: flex;
   flex: 0 0 auto;
   width: var(--card-width);
@@ -46,7 +48,6 @@
 }
 
 .cardDim {
-  filter: blur(var(--hero-frame-blur));
   opacity: 0.35;
   transform: scale(0.96);
 }
@@ -93,16 +94,8 @@
   object-fit: cover;
   border-radius: inherit;
   transition: filter 520ms ease, opacity 520ms ease;
-}
-
-.cardDim .image {
-  filter: blur(calc(var(--hero-frame-blur) * 0.85));
-  opacity: 0.6;
-}
-
-.cardActive .image {
-  filter: blur(0);
-  opacity: 1;
+  filter: blur(calc((1 - var(--card-visibility, 0)) * var(--hero-frame-blur)));
+  opacity: calc(0.6 + var(--card-visibility, 0) * 0.4);
 }
 
 .caption {
@@ -158,8 +151,9 @@
 
 @media (max-width: 768px) {
   .rail {
-    --card-width: clamp(300px, 88vw, 560px);
+    --card-width: calc(clamp(260px, 82vw, 520px) - 10px);
     --card-aspect: 78%;
-    gap: clamp(20px, 6vw, 32px);
+    --rail-gap: clamp(14px, 4vw, 26px);
+    gap: var(--rail-gap);
   }
 }

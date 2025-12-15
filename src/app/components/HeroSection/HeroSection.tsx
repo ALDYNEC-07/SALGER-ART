@@ -3,12 +3,35 @@
  Он показывает портрет автора и слоганы сразу при загрузке страницы.
  Он даёт ссылку, которая ведёт посетителя вниз к списку серий.
 */
+"use client";
+
+import type { MouseEvent } from "react";
 import Image from "next/image";
 /* Портрет автора, вынесенный на главный экран */
 import authorImage from "../../assets/Author.jpg";
 import styles from "./HeroSection.module.css";
 
 export function HeroSection() {
+  /* При клике на стрелку мягко прокручиваем к галерее, даже на мобильных браузерах */
+  const handleScrollToGallery = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const gallerySection = document.getElementById("gallery");
+
+    if (!gallerySection) {
+      return;
+    }
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    gallerySection.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+  };
+
   return (
     <>
       {/* Главный экран с портретом автора и слоганом, чтобы встречать посетителя при входе */}
@@ -48,7 +71,11 @@ export function HeroSection() {
             {/* Подсказка для прокрутки к галерее ниже по странице */}
             <div className={styles.heroScroll}>
               {/* Кнопка-прокрутка отправляет к блоку галереи */}
-              <a className={styles.heroScrollLink} href="#gallery">
+              <a
+                className={styles.heroScrollLink}
+                href="#gallery"
+                onClick={handleScrollToGallery}
+              >
                 <span className={styles.heroScrollIcon} aria-hidden="true"></span>
               </a>
             </div>

@@ -106,7 +106,7 @@
 }
 
 .heroScroll {
-  margin-top: 10px;
+  margin-top: 30px;
   margin-bottom: clamp(1.25rem, 3vh, 2.25rem);
   display: flex;
   justify-content: center;
@@ -190,6 +190,10 @@
     padding-top: clamp(0.5rem, 1vw, 1rem);
     --hero-content-shift: 2%;
   }
+
+  .heroScroll {
+    margin-top: 70px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -201,5 +205,10 @@
   .heroContent {
     max-width: 32rem;
     --hero-content-shift: 4%;
+  }
+
+  .heroScroll {
+    margin-top: 100px;
+    margin-bottom: 50px;
   }
 }

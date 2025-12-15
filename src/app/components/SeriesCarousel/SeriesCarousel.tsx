@@ -106,6 +106,14 @@ export function SeriesCarousel({
           const index = cardRefs.current.indexOf(entry.target as HTMLElement);
           if (index >= 0) {
             visibilityRatios.current[index] = entry.isIntersecting ? entry.intersectionRatio : 0;
+            /* Передаём долю видимости прямо в DOM, чтобы CSS плавно убирал размытие */
+            const cardElement = cardRefs.current[index];
+            if (cardElement) {
+              cardElement.style.setProperty(
+                "--card-visibility",
+                visibilityRatios.current[index].toString()
+              );
+            }
           }
         });
 
@@ -244,6 +252,7 @@ export function SeriesCarousel({
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;
+                node.style.setProperty("--card-visibility", "0");
               } else {
                 cardRefs.current[index] = null;
               }

@@ -37,6 +37,7 @@
 }
 
 .card {
+  --card-visibility: 0;
   display: flex;
   flex: 0 0 auto;
   width: var(--card-width);
@@ -92,16 +93,8 @@
   object-fit: cover;
   border-radius: inherit;
   transition: filter 520ms ease, opacity 520ms ease;
-}
-
-.cardDim .image {
-  filter: blur(calc(var(--hero-frame-blur) * 0.85));
-  opacity: 0.6;
-}
-
-.cardActive .image {
-  filter: blur(0);
-  opacity: 1;
+  filter: blur(calc((1 - var(--card-visibility, 0)) * var(--hero-frame-blur)));
+  opacity: calc(0.6 + var(--card-visibility, 0) * 0.4);
 }
 
 .caption {

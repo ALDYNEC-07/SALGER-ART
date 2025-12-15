@@ -87,7 +87,7 @@ export function SiteHeader({ logoHref, navItems }: SiteHeaderProps) {
             <span className={styles.navBar}></span>
           </button>
           <ul id={navListId} className={styles.navList}>
-            {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню, внутренние переходы идут через Link */}
+            {/* Пункты меню приходят от страницы: активный пункт подсвечен, любой клик закрывает меню, якоря скроллят плавно за счёт CSS */}
             {navItems.map((item) => {
               const linkClassName = [
                 styles.navLink,

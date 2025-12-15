@@ -1,11 +1,12 @@
 .rail {
   --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
+  --rail-gap: clamp(16px, 3vw, 40px);
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
-  gap: clamp(16px, 3vw, 40px);
+  gap: var(--rail-gap);
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: var(--space-m);
@@ -20,7 +21,7 @@
 .rail::before,
 .rail::after {
   content: "";
-  flex: 0 0 calc((100% - var(--card-width)) / 2);
+  flex: 0 0 calc((100% - var(--card-width)) / 2 - var(--rail-gap));
 }
 
 .rail::-webkit-scrollbar {
@@ -152,6 +153,7 @@
   .rail {
     --card-width: calc(clamp(260px, 82vw, 520px) - 10px);
     --card-aspect: 78%;
-    gap: clamp(14px, 4vw, 26px);
+    --rail-gap: clamp(14px, 4vw, 26px);
+    gap: var(--rail-gap);
   }
 }

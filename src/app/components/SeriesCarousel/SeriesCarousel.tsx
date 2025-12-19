@@ -49,13 +49,6 @@ export function SeriesCarousel({
   const railRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
   const [activeIndex, setActiveIndex] = useState(0);
-  /* Сразу учитываем системный запрос на уменьшение анимации, чтобы не включать плавный скролл лишний раз */
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  });
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items
@@ -63,29 +56,6 @@ export function SeriesCarousel({
     .join("|");
   /* Держим индекс в безопасных пределах, даже если список карточек сократился */
   const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
-
-  /* Обновляем реакцию на изменение системной настройки движения без перезагрузки страницы */
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-    };
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleMotionChange);
-    } else {
-      mediaQuery.addListener(handleMotionChange);
-    }
-
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleMotionChange);
-      } else {
-        mediaQuery.removeListener(handleMotionChange);
-      }
-    };
-  }, []);
 
   /* Очищаем устаревшие ссылки и видимость карточек, не даём активному индексу выходить за пределы новых данных */
   useEffect(() => {
@@ -169,7 +139,7 @@ export function SeriesCarousel({
     setActiveIndex(nextIndex);
 
     targetCard.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
+      behavior: "smooth",
       block: "nearest",
       inline: "center",
     });

@@ -152,26 +152,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .rail {
-    scroll-behavior: auto;
-  }
-
-  .card,
-  .imagePlaceholder {
-    transition: none;
-  }
-
-  .image {
-    transition: none;
-  }
-
-  .cardActive .imagePlaceholder,
-  .cardActive .image {
-    animation: none;
-  }
-}
-
 @media (max-width: 768px) {
   .rail {
     --card-width: calc(clamp(260px, 82vw, 520px) - 10px);

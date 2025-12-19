@@ -143,10 +143,3 @@ h3 {
     transform: scale(1.08);
   }
 }
-
-/* ===== Галерея серий ===== */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}

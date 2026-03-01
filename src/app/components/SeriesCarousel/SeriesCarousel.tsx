@@ -32,11 +32,6 @@ type SeriesCarouselProps = {
   showMeta?: boolean;
 };
 
-/* Эти числа задают, сколько карточка должна занимать на экране, чтобы снять размытие без резких скачков */
-const ACTIVE_RATIO_THRESHOLD = 0.6;
-const ACTIVE_RATIO_GAP = 0.12;
-const OBSERVER_THRESHOLDS = Array.from({ length: 21 }, (_, index) => index / 20);
-
 export function SeriesCarousel({
   items,
   railClassName = "",
@@ -47,11 +42,9 @@ export function SeriesCarousel({
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
-  /* Отслеживаем, какая карточка видна сильнее остальных, чтобы подсветку не сносило скачками */
-  const visibilityRatios = useRef<number[]>([]);
-  /* Фиксируем контейнер полосы, чтобы отслеживать, какие карточки видны в данный момент */
+  /* Храним контейнер полосы, чтобы понимать, какая карточка ближе всего к центру */
   const railRef = useRef<HTMLDivElement | null>(null);
-  /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
+  /* Следим, какая карточка активна, чтобы подсветка работала предсказуемо */
   const [activeIndex, setActiveIndex] = useState(0);
   /* Запоминаем, у каких карточек уже открыт полный текст описания */
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
@@ -63,10 +56,9 @@ export function SeriesCarousel({
   /* Держим индекс в безопасных пределах, даже если список карточек сократился */
   const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
-  /* Очищаем устаревшие ссылки и видимость карточек, не даём активному индексу выходить за пределы новых данных */
+  /* Очищаем устаревшие ссылки карточек при обновлении списка */
   useEffect(() => {
     cardRefs.current.length = items.length;
-    visibilityRatios.current = new Array(items.length).fill(0);
   }, [items.length, itemsSignature]);
 
   /* Сбрасываем открытые описания, когда состав карточек меняется */
@@ -74,72 +66,61 @@ export function SeriesCarousel({
     setExpandedDescriptions({});
   }, [items.length, itemsSignature]);
 
-  /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
+  /* Во время скролла сразу выделяем карточку, которая ближе всего к центру полосы */
   useEffect(() => {
-    if (!railRef.current || cardRefs.current.length === 0) {
+    const railElement = railRef.current;
+    if (!railElement || cardRefs.current.length === 0) {
       return;
     }
 
-    /* Следим за долей видимой площади карточки и даём активность только когда она заняла центр экрана */
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = cardRefs.current.indexOf(entry.target as HTMLElement);
-          if (index >= 0) {
-            visibilityRatios.current[index] = entry.isIntersecting ? entry.intersectionRatio : 0;
-            /* Передаём долю видимости прямо в DOM, чтобы CSS плавно убирал размытие */
-            const cardElement = cardRefs.current[index];
-            if (cardElement) {
-              cardElement.style.setProperty(
-                "--card-visibility",
-                visibilityRatios.current[index].toString()
-              );
-            }
-          }
-        });
+    let animationFrameId = 0;
 
-        if (!visibilityRatios.current.length) {
+    const syncActiveCardToCenter = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      animationFrameId = requestAnimationFrame(() => {
+        const currentRail = railRef.current;
+        if (!currentRail) {
           return;
         }
 
-        const bestIndex = visibilityRatios.current.reduce((best, ratio, idx, arr) => {
-          return ratio > arr[best] ? idx : best;
-        }, 0);
-        const bestRatio = visibilityRatios.current[bestIndex] ?? 0;
+        const railRect = currentRail.getBoundingClientRect();
+        const railCenterX = railRect.left + railRect.width / 2;
+        let nextActiveIndex = 0;
+        let minDistance = Number.POSITIVE_INFINITY;
 
-        setActiveIndex((prevIndex) => {
-          const currentRatio = visibilityRatios.current[prevIndex] ?? 0;
-          const cardMostlyCentered = bestRatio >= ACTIVE_RATIO_THRESHOLD;
-          const cardClearlyAhead = bestRatio - currentRatio >= ACTIVE_RATIO_GAP;
-          const currentOutOfView = currentRatio === 0;
-
-          if (bestIndex === prevIndex) {
-            return prevIndex;
+        cardRefs.current.forEach((card, index) => {
+          if (!card) {
+            return;
           }
 
-          if (bestRatio === 0 && !currentOutOfView) {
-            return prevIndex;
-          }
+          const cardRect = card.getBoundingClientRect();
+          const cardCenterX = cardRect.left + cardRect.width / 2;
+          const distanceToCenter = Math.abs(cardCenterX - railCenterX);
 
-          if (!cardMostlyCentered && !cardClearlyAhead && !currentOutOfView) {
-            return prevIndex;
+          if (distanceToCenter < minDistance) {
+            minDistance = distanceToCenter;
+            nextActiveIndex = index;
           }
-
-          return bestIndex;
         });
-      },
-      {
-        root: railRef.current,
-        threshold: OBSERVER_THRESHOLDS,
+
+        setActiveIndex(nextActiveIndex);
+      });
+    };
+
+    syncActiveCardToCenter();
+    railElement.addEventListener("scroll", syncActiveCardToCenter, { passive: true });
+    window.addEventListener("resize", syncActiveCardToCenter);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
-    );
-
-    cardRefs.current.forEach((card) => {
-      if (!card) return;
-      observer.observe(card);
-    });
-
-    return () => observer.disconnect();
+      railElement.removeEventListener("scroll", syncActiveCardToCenter);
+      window.removeEventListener("resize", syncActiveCardToCenter);
+    };
   }, [items.length, itemsSignature]);
 
   /* Прокручиваем полосу к нужной карточке с учётом предпочтений по анимации и сразу переставляем подсветку */
@@ -271,7 +252,7 @@ export function SeriesCarousel({
           </figure>
         );
 
-        /* Один общий обработчик снимает размытие при наведении или фокусе */
+        /* Один общий обработчик подсвечивает карточку при наведении или фокусе */
         const activateCard = () => setActiveIndex(index);
 
         const href = item.href ?? "";
@@ -292,7 +273,6 @@ export function SeriesCarousel({
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;
-                node.style.setProperty("--card-visibility", "0");
               } else {
                 cardRefs.current[index] = null;
               }
@@ -309,7 +289,7 @@ export function SeriesCarousel({
               <a
                 href={href}
                 className={styles.cardLink}
-                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                /* При фокусе клавиатурой также подсвечиваем выбранную карточку */
                 onFocus={activateCard}
               >
                 {cardContent}
@@ -318,7 +298,7 @@ export function SeriesCarousel({
               <Link
                 href={href}
                 className={styles.cardLink}
-                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                /* При фокусе клавиатурой также подсвечиваем выбранную карточку */
                 onFocus={activateCard}
               >
                 {cardContent}

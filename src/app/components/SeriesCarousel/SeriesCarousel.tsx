@@ -6,7 +6,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
@@ -15,7 +15,9 @@ import styles from "./SeriesCarousel.module.css";
 export type SeriesCarouselItem = {
   title: string;
   meta: string;
-  image: StaticImageData;
+  year?: string;
+  description?: string;
+  image: StaticImageData | string;
   alt: string;
   href?: string;
   sizes: string;
@@ -27,6 +29,7 @@ type SeriesCarouselProps = {
   ariaLabel: string;
   tabIndex?: number;
   metaTone?: "default" | "series";
+  showMeta?: boolean;
 };
 
 /* Эти числа задают, сколько карточка должна занимать на экране, чтобы снять размытие без резких скачков */
@@ -40,6 +43,7 @@ export function SeriesCarousel({
   ariaLabel,
   tabIndex = 0,
   metaTone = "default",
+  showMeta = false,
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -49,6 +53,8 @@ export function SeriesCarousel({
   const railRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
   const [activeIndex, setActiveIndex] = useState(0);
+  /* Запоминаем, у каких карточек уже открыт полный текст описания */
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items
@@ -61,6 +67,11 @@ export function SeriesCarousel({
   useEffect(() => {
     cardRefs.current.length = items.length;
     visibilityRatios.current = new Array(items.length).fill(0);
+  }, [items.length, itemsSignature]);
+
+  /* Сбрасываем открытые описания, когда состав карточек меняется */
+  useEffect(() => {
+    setExpandedDescriptions({});
   }, [items.length, itemsSignature]);
 
   /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
@@ -164,6 +175,36 @@ export function SeriesCarousel({
     }
   };
 
+  /* По клику раскрываем или сворачиваем полный текст описания у конкретной карточки */
+  const toggleDescription = (
+    event: MouseEvent<HTMLParagraphElement>,
+    index: number
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setExpandedDescriptions((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+  };
+
+  /* Поддерживаем клавиши Enter и пробел для раскрытия описания с клавиатуры */
+  const handleDescriptionKeyDown = (
+    event: KeyboardEvent<HTMLParagraphElement>,
+    index: number
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+
+      setExpandedDescriptions((prevState) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
+    }
+  };
+
   return (
     <div
       className={[styles.rail, railClassName].filter(Boolean).join(" ")}
@@ -174,17 +215,21 @@ export function SeriesCarousel({
       tabIndex={tabIndex}
     >
       {items.map((item, index) => {
-        const metaClassName = [
-          styles.meta,
-          metaTone === "series" ? styles.metaSeries : "",
-        ]
+        const metaClassName = [styles.meta, metaTone === "series" ? styles.metaSeries : ""]
           .filter(Boolean)
           .join(" ");
+        /* Готовим подпись с годом, чтобы показать её рядом с названием работы */
+        const trimmedYear = (item.year ?? "").trim();
+        /* Берём описание из базы, чтобы вывести его сразу после названия отдельным блоком */
+        const trimmedDescription = (item.description ?? "").trim();
+        const trimmedMeta = item.meta.trim();
+        const isDescriptionExpanded = expandedDescriptions[index] === true;
 
         /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
         const cardContent = (
           <figure className={styles.figure}>
             <div className={styles.imagePlaceholder}>
+              {/* Для URL из внешнего API отключаем оптимизацию Next Image, чтобы не зависеть от домена хранилища */}
               <Image
                 src={item.image}
                 alt={item.alt}
@@ -192,11 +237,36 @@ export function SeriesCarousel({
                 sizes={item.sizes}
                 className={styles.image}
                 priority={index === 0}
+                unoptimized={typeof item.image === "string"}
               />
             </div>
             <figcaption className={styles.caption}>
-              <h2 className={styles.title}>{item.title}</h2>
-              <p className={metaClassName}>{item.meta}</p>
+              <h2 className={styles.title}>
+                {item.title}
+                {/* Год показываем только здесь: рядом с названием через точку */}
+                {trimmedYear ? <span className={styles.titleYear}> • {trimmedYear}</span> : null}
+              </h2>
+              {/* Короткий текст о работе показываем сразу после названия, если он заполнен */}
+              {trimmedDescription ? (
+                <p
+                  className={[
+                    styles.description,
+                    isDescriptionExpanded ? styles.descriptionExpanded : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isDescriptionExpanded}
+                  title={isDescriptionExpanded ? "Свернуть описание" : "Показать описание полностью"}
+                  onClick={(event) => toggleDescription(event, index)}
+                  onKeyDown={(event) => handleDescriptionKeyDown(event, index)}
+                >
+                  {trimmedDescription}
+                </p>
+              ) : null}
+              {/* Подпись с деталями работы показываем только когда это явно включено */}
+              {showMeta && trimmedMeta ? <p className={metaClassName}>{trimmedMeta}</p> : null}
             </figcaption>
           </figure>
         );

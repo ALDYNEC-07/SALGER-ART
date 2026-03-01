@@ -115,6 +115,42 @@
   font-size: var(--fs-lg);
 }
 
+.titleYear {
+  color: #4a4a4a;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.description {
+  margin: 0;
+  color: #4f4f4f;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+  text-wrap: pretty;
+}
+
+.description:hover {
+  color: #2f2f2f;
+}
+
+.description:focus-visible {
+  outline: 1px solid rgba(0, 0, 0, 0.35);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.descriptionExpanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+  overflow: visible;
+}
+
 .meta {
   margin: 0;
   font-size: var(--fs-sm);

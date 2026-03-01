@@ -1,7 +1,7 @@
 /* 
  Этот файл рисует страницу конкретной серии по адресу в URL.
  Он показывает шапку сайта, хлебные крошки и ленту работ выбранной серии.
- Он позволяет открыть серию из любой карточки галереи и пролистать её работы.
+ Он позволяет открыть серию из любой карточки галереи и пролистать её работы из Supabase.
 */
 
 import Link from "next/link";
@@ -20,38 +20,109 @@ import {
 } from "../../components/SeriesCarousel/SeriesCarousel";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../../config/navConfig";
-/* Берём данные выбранной серии из общего списка по её адресу */
-import { getSeriesBySlug, seriesCollection } from "../../../data/seriesCollection";
+/* Берём серию и её работы из Supabase, чтобы страница не зависела от локальных файлов данных */
+import {
+  getArtworksBySeriesSlug,
+  getSeries,
+  getSeriesBySlug,
+  type SupabaseArtworkRow,
+  type SupabaseSeriesRow,
+} from "../../../lib/supabase";
 import styles from "../SeriesPage.module.css";
 
 type SeriesPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-/* Подсказываем Next.js, какие адреса серий нужно заранее подготовить */
-export function generateStaticParams() {
-  return seriesCollection.map((series) => ({ slug: series.slug }));
+/* Преобразуем любое значение в безопасный текст, чтобы спокойно собирать интерфейс при неполных данных */
+const toTextValue = (value: unknown): string => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value);
+  }
+
+  return "";
+};
+
+/* Достаём порядок карточки из поля sort_order, чтобы список был предсказуемым */
+const getArtworkOrderValue = (artwork: SupabaseArtworkRow): number => {
+  const orderField = artwork.sort_order;
+  return typeof orderField === "number" ? orderField : Number.MAX_SAFE_INTEGER;
+};
+
+/* Подсказываем Next.js, какие адреса серий можно заранее подготовить */
+export async function generateStaticParams() {
+  let seriesRows: SupabaseSeriesRow[] = [];
+
+  try {
+    seriesRows = await getSeries();
+  } catch {
+    seriesRows = [];
+  }
+
+  return seriesRows
+    .map((series) => toTextValue(series.slug))
+    .filter((slug): slug is string => slug.length > 0)
+    .map((slug) => ({ slug }));
 }
 
 export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   /* Ищем серию по адресу страницы и заранее отсекаем неизвестные варианты */
   const { slug } = await params;
-  const currentSeries = getSeriesBySlug(slug);
+
+  let currentSeries: SupabaseSeriesRow | null = null;
+  try {
+    currentSeries = await getSeriesBySlug(slug);
+  } catch {
+    currentSeries = null;
+  }
 
   if (!currentSeries) {
     notFound();
   }
 
+  /* Загружаем работы серии из Supabase по текущему адресу страницы */
+  let seriesArtworks: SupabaseArtworkRow[] = [];
+  try {
+    seriesArtworks = await getArtworksBySeriesSlug(slug);
+  } catch {
+    seriesArtworks = [];
+  }
+
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
-  /* Собираем карточки серии с нужными размерами изображений для общей карусели */
-  const carouselItems: SeriesCarouselItem[] = currentSeries.works.map((work) => ({
-    title: work.title,
-    meta: work.meta,
-    image: work.image,
-    alt: work.alt,
-    sizes: "(max-width: 640px) 96vw, (max-width: 1200px) 66vw, 680px",
-  }));
+  /* Достаём текстовые поля серии, чтобы шапка работала даже при неполных данных API */
+  const seriesTitle = toTextValue(currentSeries.title) || "Серия";
+  const seriesIntro = toTextValue(currentSeries.description) || seriesTitle;
+  const seriesYear = toTextValue(seriesArtworks[0]?.year);
+  const seriesCoverImage = toTextValue(currentSeries.cover_image_url) || "/Logo.png";
+
+  /* Сортируем работы по порядку из Supabase, а затем собираем карточки для общей карусели */
+  const carouselItems: SeriesCarouselItem[] = [...seriesArtworks]
+    .sort((a, b) => getArtworkOrderValue(a) - getArtworkOrderValue(b))
+    .map((artwork, index) => {
+      const title = toTextValue(artwork.title) || `Работа ${index + 1}`;
+      const imageUrl = toTextValue(artwork.image_url);
+      const alt = toTextValue(artwork.alt) || title;
+      const year = toTextValue(artwork.year);
+      const description = toTextValue(artwork.description);
+
+      return {
+        title,
+        /* В карточке оставляем год рядом с названием */
+        year,
+        /* Короткое описание берём из базы и ставим рядом с названием отдельным блоком */
+        description,
+        /* Детали вроде техники и размера остаются скрыты */
+        meta: "",
+        image: imageUrl || seriesCoverImage,
+        alt,
+        sizes: "(max-width: 640px) 96vw, (max-width: 1200px) 66vw, 680px",
+      };
+    });
 
   return (
     <>
@@ -70,15 +141,15 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
             <nav className={styles.breadcrumbs} aria-label="Хлебные крошки">
               <Link href="/#gallery">Галерея</Link>
               <span aria-hidden="true"> / </span>
-              <span aria-current="page">{currentSeries.title}</span>
+              <span aria-current="page">{seriesTitle}</span>
             </nav>
 
-            {/* В шапке серии оставляем только вступление и год, чтобы сразу настроить зрителя */}
+            {/* В шапке серии оставляем вступление и год, чтобы сразу настроить зрителя */}
             <header className={styles.seriesHeader}>
               <h1 id="series-title" className={styles.seriesHeaderIntro}>
-                {currentSeries.intro}
+                {seriesIntro}
               </h1>
-              <p className={styles.seriesHeaderYear}>{currentSeries.year}</p>
+              <p className={styles.seriesHeaderYear}>{seriesYear}</p>
             </header>
           </div>
 
@@ -86,7 +157,7 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
           <div className={styles.seriesWorks}>
             <SeriesCarousel
               items={carouselItems}
-              ariaLabel={`Работы серии «${currentSeries.title}»`}
+              ariaLabel={`Работы серии «${seriesTitle}»`}
               metaTone="series"
             />
           </div>

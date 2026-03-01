@@ -4,8 +4,6 @@
  Он позволяет выбрать любую серию и перейти на её отдельную страницу с работами.
 */
 
-/* Берём данные серий из одного файла, чтобы список карточек совпадал на главной и на отдельной странице */
-import { gallerySeries } from "../../data/gallerySeries";
 /* Берём готовую шапку сайта (логотип и меню) из одного места */
 import {
   SiteHeader,
@@ -17,12 +15,20 @@ import { GalleryStrip } from "../components/GalleryStrip/GalleryStrip";
 import { SiteFooter } from "../components/SiteFooter/SiteFooter";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../config/navConfig";
+/* Загружаем серии из Supabase, чтобы страница не зависела от локальных данных */
+import { getGallerySeries } from "../../lib/supabase";
 
-export default function SeriesPage() {
+export default async function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
-  /* Готовим список серий для карточек на странице выбора серии */
-  const seriesList = gallerySeries;
+
+  /* Получаем список серий из Supabase; если API недоступен, отдаём пустую ленту */
+  let seriesList: Awaited<ReturnType<typeof getGallerySeries>> = [];
+  try {
+    seriesList = await getGallerySeries();
+  } catch {
+    seriesList = [];
+  }
 
   return (
     <>

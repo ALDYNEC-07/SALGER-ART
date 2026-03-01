@@ -48,6 +48,12 @@ export function SeriesCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
   /* Запоминаем, у каких карточек уже открыт полный текст описания */
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
+  /* Храним ссылки на текст описаний, чтобы измерять их точную высоту */
+  const descriptionRefs = useRef<Array<HTMLParagraphElement | null>>([]);
+  /* Храним высоты описаний: короткая версия и полная, чтобы анимация была плавной */
+  const [descriptionHeights, setDescriptionHeights] = useState<
+    Record<number, { collapsed: number; full: number }>
+  >({});
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items
@@ -59,11 +65,44 @@ export function SeriesCarousel({
   /* Очищаем устаревшие ссылки карточек при обновлении списка */
   useEffect(() => {
     cardRefs.current.length = items.length;
+    descriptionRefs.current.length = items.length;
   }, [items.length, itemsSignature]);
 
   /* Сбрасываем открытые описания, когда состав карточек меняется */
   useEffect(() => {
     setExpandedDescriptions({});
+  }, [items.length, itemsSignature]);
+
+  /* Измеряем полную высоту каждого описания, чтобы раскрывать текст целиком */
+  useEffect(() => {
+    const measureDescriptions = () => {
+      const nextHeights: Record<number, { collapsed: number; full: number }> = {};
+
+      descriptionRefs.current.forEach((descriptionElement, index) => {
+        if (!descriptionElement) {
+          return;
+        }
+
+        const computedStyles = window.getComputedStyle(descriptionElement);
+        const lineHeight = Number.parseFloat(computedStyles.lineHeight);
+        const collapsedHeight = Number.isFinite(lineHeight) ? lineHeight * 3 : 72;
+        const fullHeight = Math.max(descriptionElement.scrollHeight, collapsedHeight);
+
+        nextHeights[index] = {
+          collapsed: collapsedHeight,
+          full: fullHeight,
+        };
+      });
+
+      setDescriptionHeights(nextHeights);
+    };
+
+    measureDescriptions();
+    window.addEventListener("resize", measureDescriptions);
+
+    return () => {
+      window.removeEventListener("resize", measureDescriptions);
+    };
   }, [items.length, itemsSignature]);
 
   /* Во время скролла сразу выделяем карточку, которая ближе всего к центру полосы */
@@ -158,7 +197,7 @@ export function SeriesCarousel({
 
   /* По клику раскрываем или сворачиваем полный текст описания у конкретной карточки */
   const toggleDescription = (
-    event: MouseEvent<HTMLParagraphElement>,
+    event: MouseEvent<HTMLButtonElement>,
     index: number
   ) => {
     event.preventDefault();
@@ -168,22 +207,6 @@ export function SeriesCarousel({
       ...prevState,
       [index]: !prevState[index],
     }));
-  };
-
-  /* Поддерживаем клавиши Enter и пробел для раскрытия описания с клавиатуры */
-  const handleDescriptionKeyDown = (
-    event: KeyboardEvent<HTMLParagraphElement>,
-    index: number
-  ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      setExpandedDescriptions((prevState) => ({
-        ...prevState,
-        [index]: !prevState[index],
-      }));
-    }
   };
 
   return (
@@ -205,6 +228,12 @@ export function SeriesCarousel({
         const trimmedDescription = (item.description ?? "").trim();
         const trimmedMeta = item.meta.trim();
         const isDescriptionExpanded = expandedDescriptions[index] === true;
+        const descriptionHeight = descriptionHeights[index];
+        const descriptionMaxHeight = descriptionHeight
+          ? isDescriptionExpanded
+            ? descriptionHeight.full
+            : descriptionHeight.collapsed
+          : undefined;
 
         /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
         const cardContent = (
@@ -229,22 +258,40 @@ export function SeriesCarousel({
               </h2>
               {/* Короткий текст о работе показываем сразу после названия, если он заполнен */}
               {trimmedDescription ? (
-                <p
-                  className={[
-                    styles.description,
-                    isDescriptionExpanded ? styles.descriptionExpanded : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={isDescriptionExpanded}
-                  title={isDescriptionExpanded ? "Свернуть описание" : "Показать описание полностью"}
-                  onClick={(event) => toggleDescription(event, index)}
-                  onKeyDown={(event) => handleDescriptionKeyDown(event, index)}
-                >
-                  {trimmedDescription}
-                </p>
+                <div className={styles.descriptionBlock}>
+                  <p
+                    className={[
+                      styles.description,
+                      isDescriptionExpanded ? styles.descriptionExpanded : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    ref={(node) => {
+                      descriptionRefs.current[index] = node;
+                    }}
+                    style={
+                      descriptionMaxHeight !== undefined
+                        ? { maxHeight: `${descriptionMaxHeight}px` }
+                        : undefined
+                    }
+                  >
+                    {trimmedDescription}
+                  </p>
+                  <button
+                    type="button"
+                    className={[
+                      styles.descriptionToggle,
+                      isDescriptionExpanded ? styles.descriptionToggleExpanded : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    aria-expanded={isDescriptionExpanded}
+                    aria-label={isDescriptionExpanded ? "Свернуть описание" : "Показать описание полностью"}
+                    onClick={(event) => toggleDescription(event, index)}
+                  >
+                    <span className={styles.descriptionChevron} aria-hidden="true" />
+                  </button>
+                </div>
               ) : null}
               {/* Подпись с деталями работы показываем только когда это явно включено */}
               {showMeta && trimmedMeta ? <p className={metaClassName}>{trimmedMeta}</p> : null}

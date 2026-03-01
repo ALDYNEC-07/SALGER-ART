@@ -39,11 +39,13 @@ export function HeroSection() {
 
               {/* Текстовая часть с подписью, заголовком и подзаголовком рядом с портретом */}
               <div className={styles.heroContent}>
-                <p className={styles.heroEyebrow}>Онлайн-галерея цифрового искусства</p>
+                <p className={styles.heroEyebrow}>Кураторская онлайн-галерея</p>
                 <h1 id="hero-title" className={styles.heroTitle}>
-                  One Bold Idea
+                  Исторические личности
                 </h1>
-                <p className={styles.heroSubtitle}>Everything starts with focus.</p>
+                <p className={styles.heroSubtitle}>
+                  Цифровые портреты, собранные как музейная афиша.
+                </p>
               </div>
             </div>
 

@@ -44,9 +44,7 @@ export function GalleryStrip({ series }: GalleryStripProps) {
           <h1 id="gallery-title" className="page-title">
             Галерея
           </h1>
-          <p className="page-intro">
-            Выберите серию — и войдите в отдельный зал.
-          </p>
+          <p className="page-intro">Исторические личности.</p>
         </header>
       </div>
 

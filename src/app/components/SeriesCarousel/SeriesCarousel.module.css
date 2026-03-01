@@ -1,11 +1,13 @@
 .rail {
   --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
+  --card-height-extra: 200px;
   --rail-gap: clamp(16px, 3vw, 40px);
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
+  align-items: flex-start;
   gap: var(--rail-gap);
   overflow-x: auto;
   overflow-y: hidden;
@@ -39,6 +41,7 @@
 
 .card {
   display: flex;
+  align-self: flex-start;
   flex: 0 0 auto;
   width: var(--card-width);
   scroll-snap-align: center;
@@ -72,7 +75,7 @@
 .imagePlaceholder {
   position: relative;
   border-radius: 1rem;
-  padding-top: var(--card-aspect);
+  padding-top: calc(var(--card-aspect) + var(--card-height-extra));
   overflow: hidden;
   background-color: #f3f3f3;
   border: 1px solid rgba(0, 0, 0, 0.04);

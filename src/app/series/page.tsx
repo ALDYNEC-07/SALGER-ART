@@ -10,22 +10,39 @@ import {
   type SiteNavItem,
 } from "../components/SiteHeader/SiteHeader";
 /* Подключаем ленту серий, чтобы не дублировать её разметку */
-import { GalleryStrip } from "../components/GalleryStrip/GalleryStrip";
+import {
+  GalleryStrip,
+  type GalleryStripItem,
+} from "../components/GalleryStrip/GalleryStrip";
 /* Подключаем общий футер, чтобы не копировать его разметку */
 import { SiteFooter } from "../components/SiteFooter/SiteFooter";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../config/navConfig";
 /* Загружаем серии из Supabase, чтобы страница не зависела от локальных данных */
-import { getGallerySeries } from "../../lib/supabase";
+import { getSeries } from "../../lib/supabase";
+
+/* Переводим данные серии в карточки галереи, которые понимает готовый визуальный компонент */
+const toGalleryStripItems = (
+  seriesList: Awaited<ReturnType<typeof getSeries>>
+): GalleryStripItem[] => {
+  return seriesList.map((series) => ({
+    slug: series.slug,
+    title: series.title,
+    meta: series.description,
+    image: series.cover_image_url || "/Logo.png",
+    alt: series.title,
+  }));
+};
 
 export default async function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
 
   /* Получаем список серий из Supabase; если API недоступен, отдаём пустую ленту */
-  let seriesList: Awaited<ReturnType<typeof getGallerySeries>> = [];
+  let seriesList: GalleryStripItem[] = [];
   try {
-    seriesList = await getGallerySeries();
+    const seriesRows = await getSeries();
+    seriesList = toGalleryStripItems(seriesRows);
   } catch {
     seriesList = [];
   }

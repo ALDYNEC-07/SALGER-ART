@@ -1,61 +1,73 @@
 # ART
 
-Проект онлайн-галереи на Next.js 16 (App Router) с исходниками в `src/`.
+Онлайн-галерея на Next.js 16 (App Router), где данные серий и работ приходят из Supabase.
 
 ## Стек
 
-- Next.js `16.0.10`
+- Next.js `16.1.6`
 - React `19.2.1`
 - TypeScript `^5`
 - ESLint `^9` + `eslint-config-next`
 - Node.js `>=20.9.0`
+- npm `>=10.9.3`
 
-## Структура
+## Data layer (Supabase)
 
-```text
-src/
-  app/
-    layout.tsx
-    page.tsx
-    series/
-      page.tsx
-      [slug]/page.tsx
-    components/
-    config/
-    assets/
-  data/
-  fonts/
-public/
-  fonts/
+Серверный слой данных находится в `src/lib/supabase.ts` и работает через Supabase REST API (`/rest/v1`).
+
+Что делает слой данных:
+- читает серии из таблицы `series`;
+- читает работы серии из `artworks_with_series`;
+- нормализует поля (текст, число, boolean);
+- фильтрует только опубликованные записи;
+- сортирует по `sort_order`.
+
+Где используется:
+- `src/app/page.tsx`
+- `src/app/series/page.tsx`
+- `src/app/series/[slug]/page.tsx`
+
+## Переменные окружения (`.env.local`)
+
+В проекте реально используются только эти переменные:
+
+```bash
+SUPABASE_URL=https://<your-project-ref>.supabase.co
+SUPABASE_ANON_KEY=<your-anon-key>
 ```
 
-Ключевые страницы:
-- `src/app/page.tsx` — главная
-- `src/app/series/page.tsx` — список серий
-- `src/app/series/[slug]/page.tsx` — страница отдельной серии
+Важно:
+- код читает именно `SUPABASE_URL` и `SUPABASE_ANON_KEY`;
+- `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY` в текущем коде не используются.
 
-## Шрифт
+## Запуск проекта
 
-Используется локальный `Manrope` через `next/font/local`:
-- конфигурация: `src/fonts/manrope.ts`
-- файлы: `public/fonts/*`
-
-## Установка и запуск
+1. Установить зависимости:
 
 ```bash
 npm ci
+```
+
+2. Создать/обновить `.env.local` с двумя переменными выше.
+
+3. Запустить dev-сервер:
+
+```bash
 npm run dev
 ```
 
-Приложение доступно на `http://localhost:3000`.
+Приложение будет доступно на `http://localhost:3000`.
 
-## Скрипты
+## Проверки и сборка
 
 ```bash
-npm run dev        # локальная разработка
-npm run build      # production-сборка
-npm run start      # запуск production-сборки
-npm run lint       # eslint
-npm run typecheck  # tsc --noEmit
-npm run check      # lint + typecheck
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Дополнительно:
+
+```bash
+npm run start
 ```

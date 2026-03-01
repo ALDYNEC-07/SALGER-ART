@@ -46,8 +46,8 @@ export function SeriesCarousel({
   const railRef = useRef<HTMLDivElement | null>(null);
   /* Следим, какая карточка активна, чтобы подсветка работала предсказуемо */
   const [activeIndex, setActiveIndex] = useState(0);
-  /* Запоминаем, у каких карточек уже открыт полный текст описания */
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
+  /* Запоминаем раскрытие описаний с привязкой к текущему составу карточек */
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
   /* Храним ссылки на текст описаний, чтобы измерять их точную высоту */
   const descriptionRefs = useRef<Array<HTMLParagraphElement | null>>([]);
   /* Храним высоты описаний: короткая версия и полная, чтобы анимация была плавной */
@@ -66,11 +66,6 @@ export function SeriesCarousel({
   useEffect(() => {
     cardRefs.current.length = items.length;
     descriptionRefs.current.length = items.length;
-  }, [items.length, itemsSignature]);
-
-  /* Сбрасываем открытые описания, когда состав карточек меняется */
-  useEffect(() => {
-    setExpandedDescriptions({});
   }, [items.length, itemsSignature]);
 
   /* Измеряем полную высоту каждого описания, чтобы раскрывать текст целиком */
@@ -202,10 +197,11 @@ export function SeriesCarousel({
   ) => {
     event.preventDefault();
     event.stopPropagation();
+    const descriptionToggleKey = `${itemsSignature}:${index}`;
 
     setExpandedDescriptions((prevState) => ({
       ...prevState,
-      [index]: !prevState[index],
+      [descriptionToggleKey]: !prevState[descriptionToggleKey],
     }));
   };
 
@@ -227,7 +223,8 @@ export function SeriesCarousel({
         /* Берём описание из базы, чтобы вывести его сразу после названия отдельным блоком */
         const trimmedDescription = (item.description ?? "").trim();
         const trimmedMeta = item.meta.trim();
-        const isDescriptionExpanded = expandedDescriptions[index] === true;
+        const descriptionToggleKey = `${itemsSignature}:${index}`;
+        const isDescriptionExpanded = expandedDescriptions[descriptionToggleKey] === true;
         const descriptionHeight = descriptionHeights[index];
         const descriptionMaxHeight = descriptionHeight
           ? isDescriptionExpanded

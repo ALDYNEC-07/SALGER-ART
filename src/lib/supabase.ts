@@ -1,10 +1,10 @@
 /*
- Этот файл читает данные серий и работ из Supabase PostgREST.
- Он отправляет запросы к таблицам series и artworks_with_series и возвращает подготовленные массивы.
- Он нужен, чтобы страницы брали данные из одного места и не дублировали сетевую логику.
+ Этот файл получает данные серий и работ из Supabase для серверных страниц.
+ Он запрашивает таблицы series и artworks_with_series и приводит ответы к стабильному виду.
+ Он нужен как единый слой данных, чтобы страницы не дублировали запросы и обработку полей.
 */
 
-const SERIES_IMAGE_FALLBACK_URL = "/Logo.png";
+import "server-only";
 
 type RawSupabaseRow = Record<string, unknown>;
 
@@ -31,14 +31,6 @@ export type SupabaseArtworkRow = {
   sort_order: number | null;
   published: boolean;
   series_slug: string;
-};
-
-export type SupabaseGallerySeriesItem = {
-  slug: string;
-  title: string;
-  meta: string;
-  image: string;
-  alt: string;
 };
 
 const toText = (value: unknown): string => {
@@ -119,37 +111,64 @@ const sortBySortOrder = <T extends { sort_order: number | null }>(rows: T[]): T[
     .map(({ row }) => row);
 };
 
-const getSupabaseConfig = () => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+/* Читаем только серверные переменные окружения, чтобы ключи не попадали в клиентский код */
+const getSupabaseServerConfig = (): { url: string; apiKey: string } => {
+  const url = process.env.SUPABASE_URL;
+  const apiKey = process.env.SUPABASE_ANON_KEY;
 
-  if (!url || !anonKey) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is not set");
+  if (!url || !apiKey) {
+    throw new Error("SUPABASE_URL or SUPABASE_ANON_KEY is not set");
   }
 
   return {
     url: url.replace(/\/$/, ""),
-    anonKey,
+    apiKey,
   };
 };
 
 const buildSeriesUrl = (url: string): string => {
-  return `${url}/rest/v1/series?select=*&published=eq.true&order=sort_order.asc`;
+  const requestUrl = new URL("/rest/v1/series", url);
+  requestUrl.searchParams.set(
+    "select",
+    "id,slug,title,description,cover_image_url,sort_order,published"
+  );
+  requestUrl.searchParams.set("published", "eq.true");
+  requestUrl.searchParams.set("order", "sort_order.asc");
+  return requestUrl.toString();
+};
+
+const buildSeriesBySlugUrl = (url: string, slug: string): string => {
+  const requestUrl = new URL("/rest/v1/series", url);
+  requestUrl.searchParams.set(
+    "select",
+    "id,slug,title,description,cover_image_url,sort_order,published"
+  );
+  requestUrl.searchParams.set("published", "eq.true");
+  requestUrl.searchParams.set("slug", `eq.${slug}`);
+  requestUrl.searchParams.set("limit", "1");
+  return requestUrl.toString();
 };
 
 const buildArtworksBySeriesUrl = (url: string, seriesSlug: string): string => {
-  const encodedSlug = encodeURIComponent(seriesSlug);
-  return `${url}/rest/v1/artworks_with_series?select=*&published=eq.true&series_slug=eq.${encodedSlug}&order=sort_order.asc`;
+  const requestUrl = new URL("/rest/v1/artworks_with_series", url);
+  requestUrl.searchParams.set(
+    "select",
+    "id,slug,title,description,year,medium,size,image_url,alt,sort_order,published,series_slug"
+  );
+  requestUrl.searchParams.set("published", "eq.true");
+  requestUrl.searchParams.set("series_slug", `eq.${seriesSlug}`);
+  requestUrl.searchParams.set("order", "sort_order.asc");
+  return requestUrl.toString();
 };
 
 async function fetchRows(url: string): Promise<RawSupabaseRow[]> {
-  const { anonKey } = getSupabaseConfig();
+  const { apiKey } = getSupabaseServerConfig();
 
   const response = await fetch(url, {
     method: "GET",
     headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
+      apikey: apiKey,
+      Authorization: `Bearer ${apiKey}`,
     },
     cache: "no-store",
   });
@@ -163,7 +182,7 @@ async function fetchRows(url: string): Promise<RawSupabaseRow[]> {
 }
 
 export async function getSeries(): Promise<SupabaseSeriesRow[]> {
-  const { url } = getSupabaseConfig();
+  const { url } = getSupabaseServerConfig();
   const rows = await fetchRows(buildSeriesUrl(url));
 
   return sortBySortOrder(rows.map(normalizeSeriesRow)).filter(
@@ -177,8 +196,20 @@ export async function getSeriesBySlug(slug: string): Promise<SupabaseSeriesRow |
     return null;
   }
 
-  const seriesRows = await getSeries();
-  return seriesRows.find((series) => series.slug === normalizedSlug) ?? null;
+  const { url } = getSupabaseServerConfig();
+  const rows = await fetchRows(buildSeriesBySlugUrl(url, normalizedSlug));
+  const currentSeries = rows[0];
+
+  if (!currentSeries) {
+    return null;
+  }
+
+  const normalizedSeries = normalizeSeriesRow(currentSeries);
+  if (!normalizedSeries.published || normalizedSeries.slug.length === 0) {
+    return null;
+  }
+
+  return normalizedSeries;
 }
 
 export async function getArtworksBySeriesSlug(seriesSlug: string): Promise<SupabaseArtworkRow[]> {
@@ -187,22 +218,10 @@ export async function getArtworksBySeriesSlug(seriesSlug: string): Promise<Supab
     return [];
   }
 
-  const { url } = getSupabaseConfig();
+  const { url } = getSupabaseServerConfig();
   const rows = await fetchRows(buildArtworksBySeriesUrl(url, normalizedSlug));
 
   return sortBySortOrder(rows.map(normalizeArtworkRow)).filter(
     (artwork) => artwork.published && artwork.series_slug === normalizedSlug
   );
-}
-
-export async function getGallerySeries(): Promise<SupabaseGallerySeriesItem[]> {
-  const seriesRows = await getSeries();
-
-  return seriesRows.map((series) => ({
-    slug: series.slug,
-    title: series.title,
-    meta: series.description,
-    image: series.cover_image_url || SERIES_IMAGE_FALLBACK_URL,
-    alt: series.title,
-  }));
 }

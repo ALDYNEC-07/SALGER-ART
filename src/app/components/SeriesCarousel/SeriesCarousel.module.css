@@ -199,6 +199,7 @@
   color: rgba(42, 32, 22, 0.74);
   text-transform: uppercase;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;

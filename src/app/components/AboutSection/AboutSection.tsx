@@ -28,24 +28,16 @@ export function AboutSection() {
               <div className={styles.manifestText}>
                 {/* Карточка с манифестом, оформленная в фирменной рамке */}
                 <div className={styles.manifestFrame}>
-                  <p className={styles.manifestLabel}>SALGER ART</p>
+                  <p className={styles.manifestLabel}>Кураторская коллекция</p>
                   <p className={styles.manifestLead}>
-                    SALGER ART — это личная онлайн-галерея минималистичных цифровых работ,
-                    где остаётся только главное: форма, пауза и внимательный взгляд.
+                    SALGER ART собирает исторические личности в формате цифровой афиши:
+                    через характер, пластику лица и атмосферу эпохи.
                   </p>
-                </div>
-
-                {/* Три опорные мысли, вынесенные в небольшие рамки */}
-                <div className={styles.manifestPills} role="list">
-                  <span className={styles.manifestPill} role="listitem">
-                    форма
-                  </span>
-                  <span className={styles.manifestPill} role="listitem">
-                    пауза
-                  </span>
-                  <span className={styles.manifestPill} role="listitem">
-                    внимательный взгляд
-                  </span>
+                  {/* Второй абзац поясняет, что именно увидит посетитель в каждой серии */}
+                  <p className={styles.manifestBody}>
+                    Каждая серия устроена как отдельный зал: крупные портреты, краткие
+                    аннотации и спокойный темп просмотра без лишнего визуального шума.
+                  </p>
                 </div>
               </div>
             </div>

@@ -238,11 +238,64 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 425px) and (max-width: 768px) {
   .rail {
-    --card-width: calc(clamp(260px, 82vw, 520px) - 10px);
-    --card-aspect: 78%;
+    --card-width: calc(clamp(220px, 58vw, 360px) - 10px);
+    --card-aspect: 74%;
+    --card-height-extra: 150px;
     --rail-gap: clamp(14px, 4vw, 26px);
     gap: var(--rail-gap);
+  }
+}
+
+@media (max-width: 424px) {
+  .rail {
+    --card-width: calc(clamp(250px, 84vw, 420px) - 10px);
+    --card-aspect: 78%;
+    --card-height-extra: 170px;
+    --rail-gap: clamp(12px, 4.5vw, 20px);
+    gap: var(--rail-gap);
+  }
+}
+
+@media (min-width: 769px) {
+  .rail {
+    --card-width: clamp(220px, 18vw, 300px);
+    --card-aspect: 72%;
+    --card-height-extra: 84px;
+
+    width: min(100%, calc(var(--page-max-width) - clamp(2rem, 8vw, 5rem)));
+    margin-inline: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+    scroll-padding-inline: 0;
+    padding-inline: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: clamp(0.95rem, 1.8vw, 1.4rem);
+    row-gap: clamp(1rem, 2.2vw, 1.55rem);
+  }
+
+  .rail::before,
+  .rail::after {
+    content: none;
+  }
+
+  .card {
+    flex: 0 1 var(--card-width);
+    width: min(var(--card-width), 100%);
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+
+  .cardDim,
+  .cardActive {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cardActive .imagePlaceholder,
+  .cardActive .image {
+    animation: none;
   }
 }

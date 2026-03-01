@@ -40,3 +40,21 @@
 .seriesWorks {
   overflow: visible;
 }
+
+.seriesWorksMobile {
+  display: block;
+}
+
+.seriesWorksDesktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .seriesWorksMobile {
+    display: none;
+  }
+
+  .seriesWorksDesktop {
+    display: block;
+  }
+}

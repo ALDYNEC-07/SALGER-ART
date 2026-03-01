@@ -18,6 +18,8 @@ import {
   SeriesCarousel,
   type SeriesCarouselItem,
 } from "../../components/SeriesCarousel/SeriesCarousel";
+/* Подключаем отдельный режим показа серии для широких экранов */
+import { SeriesCuratedHall } from "../../components/SeriesCuratedHall/SeriesCuratedHall";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../../config/navConfig";
 /* Берём серию и её работы из Supabase, чтобы страница не зависела от локальных файлов данных */
@@ -151,13 +153,24 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
             </header>
           </div>
 
-          {/* Полоса карточек серии на всю ширину экрана с эффектом размытия соседей */}
+          {/* Для серии используем два режима: мобильную ленту и desktop-зал */}
           <div className={styles.seriesWorks}>
-            <SeriesCarousel
-              items={carouselItems}
-              ariaLabel={`Работы серии «${seriesTitle}»`}
-              metaTone="series"
-            />
+            {/* На мобильных оставляем привычную горизонтальную ленту */}
+            <div className={styles.seriesWorksMobile}>
+              <SeriesCarousel
+                items={carouselItems}
+                ariaLabel={`Работы серии «${seriesTitle}»`}
+                metaTone="series"
+              />
+            </div>
+
+            {/* На немобильных экранах показываем «кураторский зал» */}
+            <div className={styles.seriesWorksDesktop}>
+              <SeriesCuratedHall
+                items={carouselItems}
+                ariaLabel={`Работы серии «${seriesTitle}»`}
+              />
+            </div>
           </div>
         </section>
       </main>

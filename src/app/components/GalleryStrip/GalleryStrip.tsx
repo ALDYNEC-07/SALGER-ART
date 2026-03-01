@@ -25,8 +25,12 @@ type GalleryStripProps = {
 export function GalleryStrip({ series }: GalleryStripProps) {
   /* Готовим карточки галереи с нужными ссылками и размерами изображений для карусели */
   const carouselItems: SeriesCarouselItem[] = series.map((item) => ({
+    /* Укорачиваем подпись, чтобы карточка выглядела как каталожный лист и не перегружалась текстом */
     title: item.title,
-    meta: item.meta,
+    meta:
+      item.meta.length > 92
+        ? `${item.meta.slice(0, 89).trimEnd()}...`
+        : item.meta,
     image: item.image,
     alt: item.alt,
     href: `/series/${item.slug}`,
@@ -41,10 +45,11 @@ export function GalleryStrip({ series }: GalleryStripProps) {
     >
       <div className="container">
         <header className="page__header">
+          {/* Короткий служебный лейбл задаёт настроение музейного каталога */}
+          <p className={styles.galleryKicker}>Каталог выставки</p>
           <h1 id="gallery-title" className="page-title">
             Галерея
           </h1>
-          <p className="page-intro">Исторические личности.</p>
         </header>
       </div>
 
@@ -52,6 +57,7 @@ export function GalleryStrip({ series }: GalleryStripProps) {
       <SeriesCarousel
         items={carouselItems}
         ariaLabel="Список серий"
+        showMeta
       />
     </section>
   );

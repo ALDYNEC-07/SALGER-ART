@@ -1,8 +1,21 @@
 .pageGallery {
   overflow: hidden;
   padding-top: calc(clamp(3rem, 8vh, 4.5rem) - 45px);
+  background:
+    linear-gradient(180deg, #f4efe5 0%, #f7f3eb 52%, #f8f6f0 100%);
+  border-top: 1px solid rgba(36, 27, 18, 0.08);
+  border-bottom: 1px solid rgba(36, 27, 18, 0.08);
 }
 
 .pageGallery :global(.page__header) {
-  margin-bottom: var(--space-s);
+  margin-bottom: clamp(0.6rem, 1.6vw, 1.05rem);
+}
+
+.galleryKicker {
+  margin: 0 0 0.38rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(40, 30, 20, 0.58);
+  font-weight: 600;
 }

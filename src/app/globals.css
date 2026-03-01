@@ -64,8 +64,10 @@ body {
   font-family: var(--font-text);
   font-size: var(--fs-base);
   line-height: 1.62;
-  background-color: #ffffff;
-  color: #141414;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0) 32%),
+    linear-gradient(180deg, #f7f3eb 0%, #f8f4ee 55%, #f3eee3 100%);
+  color: #17130f;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
@@ -128,19 +130,20 @@ h3 {
 
 .page-title {
   margin: 0 0 0.4rem;
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  line-height: 1.14;
-  letter-spacing: -0.016em;
+  font-size: clamp(1.9rem, 3.1vw, 2.45rem);
+  line-height: 1.11;
+  letter-spacing: -0.018em;
   text-wrap: balance;
+  color: #1a1510;
 }
 
 .page-intro {
   margin: 0;
   max-width: 34rem;
-  font-size: var(--fs-md);
+  font-size: clamp(1.04rem, 1.4vw, 1.2rem);
   line-height: 1.56;
   letter-spacing: 0.003em;
-  color: rgba(20, 20, 20, 0.78);
+  color: rgba(29, 22, 16, 0.8);
 }
 
 @keyframes heroZoom {

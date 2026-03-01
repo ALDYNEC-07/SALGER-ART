@@ -1,5 +1,7 @@
 .pageAbout {
   padding-top: calc(clamp(3rem, 8vh, 4.5rem) - 45px);
+  background:
+    linear-gradient(180deg, #f8f5ef 0%, #f5f0e6 100%);
 }
 
 .pageAbout .page__body {
@@ -53,8 +55,8 @@
   gap: var(--space-xs);
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  background: linear-gradient(120deg, #f8f6ef, #f1efe7);
-  color: #111111;
+  background: linear-gradient(120deg, #f5efe3, #efe6d8);
+  color: #1b1510;
   font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -67,11 +69,11 @@
 
 .manifestLead {
   margin: var(--space-m) 0 0;
-  font-size: clamp(1.28rem, 0.95vw + 1.08rem, 1.82rem);
-  line-height: 1.58;
+  font-size: clamp(1.24rem, 0.9vw + 1.03rem, 1.72rem);
+  line-height: 1.62;
   letter-spacing: 0.002em;
   max-width: 39ch;
-  color: #0f0f0f;
+  color: #1b1611;
   position: relative;
   z-index: 1;
   text-wrap: pretty;
@@ -96,7 +98,7 @@
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
   font-size: var(--fs-xs);
   letter-spacing: 0.03em;
-  color: #1c1c1c;
+  color: #26201a;
   overflow: hidden;
 }
 

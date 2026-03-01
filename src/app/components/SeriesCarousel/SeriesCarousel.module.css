@@ -2,7 +2,7 @@
   --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
   --card-height-extra: 200px;
-  --rail-gap: clamp(16px, 3vw, 40px);
+  --rail-gap: clamp(18px, 3vw, 42px);
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
@@ -50,7 +50,7 @@
 }
 
 .cardDim {
-  opacity: 0.35;
+  opacity: 0.42;
   transform: scale(0.96);
 }
 
@@ -106,18 +106,23 @@
 .caption {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0.35rem;
 }
 
 .title {
   margin: 0;
-  font-size: var(--fs-lg);
+  font-size: clamp(1.12rem, 1.4vw, 1.34rem);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+  color: #1b1712;
 }
 
 .titleYear {
-  color: #4a4a4a;
-  font-size: 0.9em;
+  color: rgba(43, 33, 22, 0.72);
+  font-size: 0.86em;
   font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .description {
@@ -187,12 +192,23 @@
 
 .meta {
   margin: 0;
-  font-size: var(--fs-sm);
-  color: #555555;
+  max-width: 42ch;
+  font-size: 0.81rem;
+  line-height: 1.58;
+  letter-spacing: 0.025em;
+  color: rgba(42, 32, 22, 0.74);
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .metaSeries {
-  color: #444444;
+  color: rgba(43, 33, 24, 0.76);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 0.9rem;
 }
 
 .cardLink:hover .imagePlaceholder {

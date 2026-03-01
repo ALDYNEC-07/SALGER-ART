@@ -113,11 +113,13 @@ const sortBySortOrder = <T extends { sort_order: number | null }>(rows: T[]): T[
 
 /* Читаем только серверные переменные окружения, чтобы ключи не попадали в клиентский код */
 const getSupabaseServerConfig = (): { url: string; apiKey: string } => {
-  const url = process.env.SUPABASE_URL;
-  const apiKey = process.env.SUPABASE_ANON_KEY;
+  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const apiKey = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !apiKey) {
-    throw new Error("SUPABASE_URL or SUPABASE_ANON_KEY is not set");
+    throw new Error(
+      "Supabase env is missing. Set SUPABASE_URL/SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
   }
 
   return {

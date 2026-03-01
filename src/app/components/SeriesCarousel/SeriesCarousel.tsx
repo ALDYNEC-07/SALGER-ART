@@ -13,6 +13,7 @@ import Link from "next/link";
 import styles from "./SeriesCarousel.module.css";
 
 export type SeriesCarouselItem = {
+  id: string;
   title: string;
   meta: string;
   year?: string;
@@ -56,9 +57,7 @@ export function SeriesCarousel({
   >({});
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
-  const itemsSignature = items
-    .map((item) => `${item.title}-${item.href ?? "nolink"}`)
-    .join("|");
+  const itemsSignature = items.map((item) => item.id).join("|");
   /* Держим индекс в безопасных пределах, даже если список карточек сократился */
   const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
@@ -236,7 +235,7 @@ export function SeriesCarousel({
         const cardContent = (
           <figure className={styles.figure}>
             <div className={styles.imagePlaceholder}>
-              {/* Для URL из внешнего API отключаем оптимизацию Next Image, чтобы не зависеть от домена хранилища */}
+              {/* Изображение приходит из API, а домен разрешён в next.config.ts */}
               <Image
                 src={item.image}
                 alt={item.alt}
@@ -244,7 +243,6 @@ export function SeriesCarousel({
                 sizes={item.sizes}
                 className={styles.image}
                 priority={index === 0}
-                unoptimized={typeof item.image === "string"}
               />
             </div>
             <figcaption className={styles.caption}>
@@ -300,13 +298,12 @@ export function SeriesCarousel({
         const activateCard = () => setActiveIndex(index);
 
         const href = item.href ?? "";
-        const cardKey = href ? `${href}-${item.title}` : item.title;
         const hasLink = href.length > 0;
         const isHashLink = hasLink && href.startsWith("#");
 
         return (
           <article
-            key={cardKey}
+            key={item.id}
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
             className={[
               styles.card,

@@ -25,6 +25,7 @@ type GalleryStripProps = {
 export function GalleryStrip({ series }: GalleryStripProps) {
   /* Готовим карточки галереи с нужными ссылками и размерами изображений для карусели */
   const carouselItems: SeriesCarouselItem[] = series.map((item) => ({
+    id: item.slug,
     /* Укорачиваем подпись, чтобы карточка выглядела как каталожный лист и не перегружалась текстом */
     title: item.title,
     meta:

@@ -126,12 +126,12 @@
   color: #4f4f4f;
   font-size: var(--fs-sm);
   line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  max-height: calc(1.45em * 3);
   overflow: hidden;
   cursor: pointer;
   text-wrap: pretty;
+  transition: max-height 420ms cubic-bezier(0.22, 1, 0.36, 1), color 220ms ease;
+  will-change: max-height;
 }
 
 .description:hover {
@@ -145,10 +145,7 @@
 }
 
 .descriptionExpanded {
-  display: block;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
-  overflow: visible;
+  max-height: 40rem;
 }
 
 .meta {

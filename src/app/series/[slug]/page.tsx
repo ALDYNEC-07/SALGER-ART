@@ -97,7 +97,6 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   /* Достаём текстовые поля серии, чтобы шапка работала даже при неполных данных API */
   const seriesTitle = toTextValue(currentSeries.title) || "Серия";
   const seriesIntro = toTextValue(currentSeries.description) || seriesTitle;
-  const seriesYear = toTextValue(seriesArtworks[0]?.year);
   const seriesCoverImage = toTextValue(currentSeries.cover_image_url) || "/Logo.png";
 
   /* Сортируем работы по порядку из Supabase, а затем собираем карточки для общей карусели */
@@ -144,12 +143,11 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
               <span aria-current="page">{seriesTitle}</span>
             </nav>
 
-            {/* В шапке серии оставляем вступление и год, чтобы сразу настроить зрителя */}
+            {/* В шапке серии оставляем только вступление, чтобы не перегружать верх страницы */}
             <header className={styles.seriesHeader}>
               <h1 id="series-title" className={styles.seriesHeaderIntro}>
                 {seriesIntro}
               </h1>
-              <p className={styles.seriesHeaderYear}>{seriesYear}</p>
             </header>
           </div>
 

@@ -32,13 +32,12 @@
 В проекте реально используются только эти переменные:
 
 ```bash
-SUPABASE_URL=https://<your-project-ref>.supabase.co
-SUPABASE_ANON_KEY=<your-anon-key>
+NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
 ```
 
 Важно:
-- код читает именно `SUPABASE_URL` и `SUPABASE_ANON_KEY`;
-- `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY` в текущем коде не используются.
+- код читает именно `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ## Запуск проекта
 

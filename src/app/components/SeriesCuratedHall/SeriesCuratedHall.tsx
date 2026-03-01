@@ -54,7 +54,6 @@ export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) 
               sizes="(max-width: 1200px) 66vw, 980px"
               className={styles.previewImage}
               priority
-              unoptimized={typeof activeItem.image === "string"}
             />
           </div>
           <figcaption className={styles.previewCaption}>

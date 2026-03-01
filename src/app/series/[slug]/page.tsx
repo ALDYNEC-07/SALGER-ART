@@ -112,6 +112,9 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
       const description = toTextValue(artwork.description);
 
       return {
+        id:
+          toTextValue(artwork.slug) ||
+          (typeof artwork.id === "number" ? String(artwork.id) : `artwork-${index}`),
         title,
         /* В карточке оставляем год рядом с названием */
         year,

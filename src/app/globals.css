@@ -34,6 +34,8 @@ html {
 
   --header-height: 3.5rem;
   --hero-frame-blur: 6px;
+  --font-display: var(--font-manrope), "Avenir Next", "Segoe UI", sans-serif;
+  --font-text: "Avenir Next", "SF Pro Text", "Segoe UI", sans-serif;
 }
 
 @media (min-width: 768px) {
@@ -59,11 +61,11 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-text);
   font-size: var(--fs-base);
-  line-height: 1.6;
+  line-height: 1.62;
   background-color: #ffffff;
-  color: #111111;
+  color: #141414;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
@@ -109,8 +111,9 @@ button {
 h1,
 h2,
 h3 {
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.012em;
 }
 
 .page {
@@ -124,15 +127,20 @@ h3 {
 }
 
 .page-title {
-  margin: 0 0 var(--space-s);
+  margin: 0 0 0.4rem;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
-  line-height: 1.2;
+  line-height: 1.14;
+  letter-spacing: -0.016em;
+  text-wrap: balance;
 }
 
 .page-intro {
   margin: 0;
   max-width: 34rem;
   font-size: var(--fs-md);
+  line-height: 1.56;
+  letter-spacing: 0.003em;
+  color: rgba(20, 20, 20, 0.78);
 }
 
 @keyframes heroZoom {

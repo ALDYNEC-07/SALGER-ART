@@ -6,6 +6,7 @@
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { manrope } from "../fonts/manrope";
 
 export const metadata: Metadata = {
   title: "SALGER ART — онлайн-галерея",
@@ -29,7 +30,7 @@ export default function RootLayout({
         <meta charSet="utf-8" />
       </head>
       {/* Обёртка для всего содержимого галереи на странице */}
-      <body>{children}</body>
+      <body className={manrope.variable}>{children}</body>
     </html>
   );
 }

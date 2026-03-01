@@ -4,25 +4,48 @@
  Он позволяет выбрать любую серию и перейти на её отдельную страницу с работами.
 */
 
-/* Берём данные серий из одного файла, чтобы список карточек совпадал на главной и на отдельной странице */
-import { gallerySeries } from "../../data/gallerySeries";
 /* Берём готовую шапку сайта (логотип и меню) из одного места */
 import {
   SiteHeader,
   type SiteNavItem,
 } from "../components/SiteHeader/SiteHeader";
 /* Подключаем ленту серий, чтобы не дублировать её разметку */
-import { GalleryStrip } from "../components/GalleryStrip/GalleryStrip";
+import {
+  GalleryStrip,
+  type GalleryStripItem,
+} from "../components/GalleryStrip/GalleryStrip";
 /* Подключаем общий футер, чтобы не копировать его разметку */
 import { SiteFooter } from "../components/SiteFooter/SiteFooter";
 /* Список пунктов меню храним в файле настроек, чтобы менять их один раз */
 import { getNavItems } from "../config/navConfig";
+/* Загружаем серии из Supabase, чтобы страница не зависела от локальных данных */
+import { getSeries } from "../../lib/supabase";
 
-export default function SeriesPage() {
+/* Переводим данные серии в карточки галереи, которые понимает готовый визуальный компонент */
+const toGalleryStripItems = (
+  seriesList: Awaited<ReturnType<typeof getSeries>>
+): GalleryStripItem[] => {
+  return seriesList.map((series) => ({
+    slug: series.slug,
+    title: series.title,
+    meta: series.description,
+    image: series.cover_image_url || "/Logo.png",
+    alt: series.title,
+  }));
+};
+
+export default async function SeriesPage() {
   /* Пункты меню для страницы серии берём из общей конфигурации */
   const navItems: SiteNavItem[] = getNavItems("series");
-  /* Готовим список серий для карточек на странице выбора серии */
-  const seriesList = gallerySeries;
+
+  /* Получаем список серий из Supabase; если API недоступен, отдаём пустую ленту */
+  let seriesList: GalleryStripItem[] = [];
+  try {
+    const seriesRows = await getSeries();
+    seriesList = toGalleryStripItems(seriesRows);
+  } catch {
+    seriesList = [];
+  }
 
   return (
     <>

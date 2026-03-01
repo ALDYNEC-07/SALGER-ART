@@ -2,3 +2,7 @@
   overflow: hidden;
   padding-top: calc(clamp(3rem, 8vh, 4.5rem) - 45px);
 }
+
+.pageGallery :global(.page__header) {
+  margin-bottom: var(--space-s);
+}

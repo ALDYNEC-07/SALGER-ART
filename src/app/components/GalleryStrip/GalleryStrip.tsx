@@ -1,18 +1,25 @@
 /* 
  Этот файл описывает горизонтальную ленту серий на главной странице.
-Он показывает обложки серий и подсвечивает центральную карточку при прокрутке.
-Он позволяет листать карточки стрелками и подсвечивать нужную по наведению или фокусу.
+ Он показывает обложки серий и подсвечивает центральную карточку при прокрутке.
+ Он позволяет листать карточки стрелками и подсвечивать нужную по наведению или фокусу.
 */
 
-import type { GallerySeriesItem } from "../../../data/gallerySeries";
 import {
   SeriesCarousel,
   type SeriesCarouselItem,
 } from "../SeriesCarousel/SeriesCarousel";
 import styles from "./GalleryStrip.module.css";
 
+export type GalleryStripItem = {
+  slug: string;
+  title: string;
+  meta: string;
+  image: SeriesCarouselItem["image"];
+  alt: string;
+};
+
 type GalleryStripProps = {
-  series: GallerySeriesItem[];
+  series: GalleryStripItem[];
 };
 
 export function GalleryStrip({ series }: GalleryStripProps) {
@@ -37,9 +44,7 @@ export function GalleryStrip({ series }: GalleryStripProps) {
           <h1 id="gallery-title" className="page-title">
             Галерея
           </h1>
-          <p className="page-intro">
-            Выберите серию — и войдите в отдельный зал.
-          </p>
+          <p className="page-intro">Исторические личности.</p>
         </header>
       </div>
 

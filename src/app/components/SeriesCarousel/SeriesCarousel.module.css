@@ -1,11 +1,13 @@
 .rail {
   --card-width: calc(clamp(280px, 68vw, 600px) - 10px);
   --card-aspect: 68%;
+  --card-height-extra: 200px;
   --rail-gap: clamp(16px, 3vw, 40px);
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
   display: flex;
+  align-items: flex-start;
   gap: var(--rail-gap);
   overflow-x: auto;
   overflow-y: hidden;
@@ -38,13 +40,13 @@
 }
 
 .card {
-  --card-visibility: 0;
   display: flex;
+  align-self: flex-start;
   flex: 0 0 auto;
   width: var(--card-width);
   scroll-snap-align: center;
   scroll-snap-stop: always;
-  transition: filter 480ms ease, opacity 480ms ease, transform 320ms ease;
+  transition: opacity 480ms ease, transform 320ms ease;
 }
 
 .cardDim {
@@ -53,7 +55,6 @@
 }
 
 .cardActive {
-  filter: none;
   opacity: 1;
   transform: scale(1);
 }
@@ -74,12 +75,12 @@
 .imagePlaceholder {
   position: relative;
   border-radius: 1rem;
-  padding-top: var(--card-aspect);
+  padding-top: calc(var(--card-aspect) + var(--card-height-extra));
   overflow: hidden;
   background-color: #f3f3f3;
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
-  transition: transform 300ms ease, box-shadow 300ms ease, filter 300ms ease, border-color 300ms ease;
+  transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
 }
 
 .cardActive .imagePlaceholder {
@@ -93,9 +94,7 @@
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
-  transition: filter 520ms ease, opacity 520ms ease;
-  filter: blur(calc((1 - var(--card-visibility, 0)) * var(--hero-frame-blur)));
-  opacity: calc(0.6 + var(--card-visibility, 0) * 0.4);
+  opacity: 1;
   transform-origin: center;
   will-change: transform;
 }
@@ -113,6 +112,77 @@
 .title {
   margin: 0;
   font-size: var(--fs-lg);
+}
+
+.titleYear {
+  color: #4a4a4a;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.description {
+  margin: 0;
+  color: #4f4f4f;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  max-height: calc(1.45em * 3);
+  overflow: hidden;
+  text-wrap: pretty;
+  transition: max-height 460ms cubic-bezier(0.22, 1, 0.36, 1), color 220ms ease;
+  will-change: max-height;
+}
+
+.descriptionBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.descriptionToggle {
+  margin: 0;
+  padding: 0.1rem 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #4f4f4f;
+  cursor: pointer;
+  line-height: 1;
+  align-self: center;
+  transform: translateY(0);
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1), color 220ms ease;
+}
+
+.descriptionToggle:hover {
+  color: #1f1f1f;
+}
+
+.descriptionToggle:focus-visible {
+  outline: 1px solid rgba(0, 0, 0, 0.35);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.descriptionChevron {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-right: 0.08rem solid currentColor;
+  border-bottom: 0.08rem solid currentColor;
+  transform: rotate(45deg);
+  transform-origin: center;
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.descriptionExpanded {
+  color: #2f2f2f;
+}
+
+.descriptionToggleExpanded {
+  transform: translateY(0.35rem);
+}
+
+.descriptionToggleExpanded .descriptionChevron {
+  transform: rotate(225deg);
 }
 
 .meta {

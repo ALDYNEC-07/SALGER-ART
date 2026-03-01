@@ -18,11 +18,12 @@
 }
 
 .seriesHeader {
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-l);
+  text-align: center;
 }
 
 .seriesHeaderIntro {
-  margin: 0 0 var(--space-xs);
+  margin: 0 auto 0.2rem;
   max-width: 48rem;
   font-size: clamp(1.1rem, 2vw, 2.5rem);
   line-height: 1.35;

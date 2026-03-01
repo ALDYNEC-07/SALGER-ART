@@ -6,7 +6,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
@@ -15,7 +15,9 @@ import styles from "./SeriesCarousel.module.css";
 export type SeriesCarouselItem = {
   title: string;
   meta: string;
-  image: StaticImageData;
+  year?: string;
+  description?: string;
+  image: StaticImageData | string;
   alt: string;
   href?: string;
   sizes: string;
@@ -27,12 +29,8 @@ type SeriesCarouselProps = {
   ariaLabel: string;
   tabIndex?: number;
   metaTone?: "default" | "series";
+  showMeta?: boolean;
 };
-
-/* Эти числа задают, сколько карточка должна занимать на экране, чтобы снять размытие без резких скачков */
-const ACTIVE_RATIO_THRESHOLD = 0.6;
-const ACTIVE_RATIO_GAP = 0.12;
-const OBSERVER_THRESHOLDS = Array.from({ length: 21 }, (_, index) => index / 20);
 
 export function SeriesCarousel({
   items,
@@ -40,15 +38,22 @@ export function SeriesCarousel({
   ariaLabel,
   tabIndex = 0,
   metaTone = "default",
+  showMeta = false,
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
-  /* Отслеживаем, какая карточка видна сильнее остальных, чтобы подсветку не сносило скачками */
-  const visibilityRatios = useRef<number[]>([]);
-  /* Фиксируем контейнер полосы, чтобы отслеживать, какие карточки видны в данный момент */
+  /* Храним контейнер полосы, чтобы понимать, какая карточка ближе всего к центру */
   const railRef = useRef<HTMLDivElement | null>(null);
-  /* Следим, какая карточка активна, чтобы добавлять или убирать размытие */
+  /* Следим, какая карточка активна, чтобы подсветка работала предсказуемо */
   const [activeIndex, setActiveIndex] = useState(0);
+  /* Запоминаем раскрытие описаний с привязкой к текущему составу карточек */
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
+  /* Храним ссылки на текст описаний, чтобы измерять их точную высоту */
+  const descriptionRefs = useRef<Array<HTMLParagraphElement | null>>([]);
+  /* Храним высоты описаний: короткая версия и полная, чтобы анимация была плавной */
+  const [descriptionHeights, setDescriptionHeights] = useState<
+    Record<number, { collapsed: number; full: number }>
+  >({});
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items
@@ -57,78 +62,99 @@ export function SeriesCarousel({
   /* Держим индекс в безопасных пределах, даже если список карточек сократился */
   const safeActiveIndex = Math.max(0, Math.min(activeIndex, Math.max(items.length - 1, 0)));
 
-  /* Очищаем устаревшие ссылки и видимость карточек, не даём активному индексу выходить за пределы новых данных */
+  /* Очищаем устаревшие ссылки карточек при обновлении списка */
   useEffect(() => {
     cardRefs.current.length = items.length;
-    visibilityRatios.current = new Array(items.length).fill(0);
+    descriptionRefs.current.length = items.length;
   }, [items.length, itemsSignature]);
 
-  /* Ищем самую заметную карточку в зоне видимости и реагируем на любое изменение доли видимости */
+  /* Измеряем полную высоту каждого описания, чтобы раскрывать текст целиком */
   useEffect(() => {
-    if (!railRef.current || cardRefs.current.length === 0) {
-      return;
-    }
+    const measureDescriptions = () => {
+      const nextHeights: Record<number, { collapsed: number; full: number }> = {};
 
-    /* Следим за долей видимой площади карточки и даём активность только когда она заняла центр экрана */
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = cardRefs.current.indexOf(entry.target as HTMLElement);
-          if (index >= 0) {
-            visibilityRatios.current[index] = entry.isIntersecting ? entry.intersectionRatio : 0;
-            /* Передаём долю видимости прямо в DOM, чтобы CSS плавно убирал размытие */
-            const cardElement = cardRefs.current[index];
-            if (cardElement) {
-              cardElement.style.setProperty(
-                "--card-visibility",
-                visibilityRatios.current[index].toString()
-              );
-            }
-          }
-        });
-
-        if (!visibilityRatios.current.length) {
+      descriptionRefs.current.forEach((descriptionElement, index) => {
+        if (!descriptionElement) {
           return;
         }
 
-        const bestIndex = visibilityRatios.current.reduce((best, ratio, idx, arr) => {
-          return ratio > arr[best] ? idx : best;
-        }, 0);
-        const bestRatio = visibilityRatios.current[bestIndex] ?? 0;
+        const computedStyles = window.getComputedStyle(descriptionElement);
+        const lineHeight = Number.parseFloat(computedStyles.lineHeight);
+        const collapsedHeight = Number.isFinite(lineHeight) ? lineHeight * 3 : 72;
+        const fullHeight = Math.max(descriptionElement.scrollHeight, collapsedHeight);
 
-        setActiveIndex((prevIndex) => {
-          const currentRatio = visibilityRatios.current[prevIndex] ?? 0;
-          const cardMostlyCentered = bestRatio >= ACTIVE_RATIO_THRESHOLD;
-          const cardClearlyAhead = bestRatio - currentRatio >= ACTIVE_RATIO_GAP;
-          const currentOutOfView = currentRatio === 0;
+        nextHeights[index] = {
+          collapsed: collapsedHeight,
+          full: fullHeight,
+        };
+      });
 
-          if (bestIndex === prevIndex) {
-            return prevIndex;
-          }
+      setDescriptionHeights(nextHeights);
+    };
 
-          if (bestRatio === 0 && !currentOutOfView) {
-            return prevIndex;
-          }
+    measureDescriptions();
+    window.addEventListener("resize", measureDescriptions);
 
-          if (!cardMostlyCentered && !cardClearlyAhead && !currentOutOfView) {
-            return prevIndex;
-          }
+    return () => {
+      window.removeEventListener("resize", measureDescriptions);
+    };
+  }, [items.length, itemsSignature]);
 
-          return bestIndex;
-        });
-      },
-      {
-        root: railRef.current,
-        threshold: OBSERVER_THRESHOLDS,
+  /* Во время скролла сразу выделяем карточку, которая ближе всего к центру полосы */
+  useEffect(() => {
+    const railElement = railRef.current;
+    if (!railElement || cardRefs.current.length === 0) {
+      return;
+    }
+
+    let animationFrameId = 0;
+
+    const syncActiveCardToCenter = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
-    );
 
-    cardRefs.current.forEach((card) => {
-      if (!card) return;
-      observer.observe(card);
-    });
+      animationFrameId = requestAnimationFrame(() => {
+        const currentRail = railRef.current;
+        if (!currentRail) {
+          return;
+        }
 
-    return () => observer.disconnect();
+        const railRect = currentRail.getBoundingClientRect();
+        const railCenterX = railRect.left + railRect.width / 2;
+        let nextActiveIndex = 0;
+        let minDistance = Number.POSITIVE_INFINITY;
+
+        cardRefs.current.forEach((card, index) => {
+          if (!card) {
+            return;
+          }
+
+          const cardRect = card.getBoundingClientRect();
+          const cardCenterX = cardRect.left + cardRect.width / 2;
+          const distanceToCenter = Math.abs(cardCenterX - railCenterX);
+
+          if (distanceToCenter < minDistance) {
+            minDistance = distanceToCenter;
+            nextActiveIndex = index;
+          }
+        });
+
+        setActiveIndex(nextActiveIndex);
+      });
+    };
+
+    syncActiveCardToCenter();
+    railElement.addEventListener("scroll", syncActiveCardToCenter, { passive: true });
+    window.addEventListener("resize", syncActiveCardToCenter);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      railElement.removeEventListener("scroll", syncActiveCardToCenter);
+      window.removeEventListener("resize", syncActiveCardToCenter);
+    };
   }, [items.length, itemsSignature]);
 
   /* Прокручиваем полосу к нужной карточке с учётом предпочтений по анимации и сразу переставляем подсветку */
@@ -164,6 +190,21 @@ export function SeriesCarousel({
     }
   };
 
+  /* По клику раскрываем или сворачиваем полный текст описания у конкретной карточки */
+  const toggleDescription = (
+    event: MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const descriptionToggleKey = `${itemsSignature}:${index}`;
+
+    setExpandedDescriptions((prevState) => ({
+      ...prevState,
+      [descriptionToggleKey]: !prevState[descriptionToggleKey],
+    }));
+  };
+
   return (
     <div
       className={[styles.rail, railClassName].filter(Boolean).join(" ")}
@@ -174,17 +215,28 @@ export function SeriesCarousel({
       tabIndex={tabIndex}
     >
       {items.map((item, index) => {
-        const metaClassName = [
-          styles.meta,
-          metaTone === "series" ? styles.metaSeries : "",
-        ]
+        const metaClassName = [styles.meta, metaTone === "series" ? styles.metaSeries : ""]
           .filter(Boolean)
           .join(" ");
+        /* Готовим подпись с годом, чтобы показать её рядом с названием работы */
+        const trimmedYear = (item.year ?? "").trim();
+        /* Берём описание из базы, чтобы вывести его сразу после названия отдельным блоком */
+        const trimmedDescription = (item.description ?? "").trim();
+        const trimmedMeta = item.meta.trim();
+        const descriptionToggleKey = `${itemsSignature}:${index}`;
+        const isDescriptionExpanded = expandedDescriptions[descriptionToggleKey] === true;
+        const descriptionHeight = descriptionHeights[index];
+        const descriptionMaxHeight = descriptionHeight
+          ? isDescriptionExpanded
+            ? descriptionHeight.full
+            : descriptionHeight.collapsed
+          : undefined;
 
         /* Повторяемый контент карточки держим в одном месте, чтобы проще менять разметку */
         const cardContent = (
           <figure className={styles.figure}>
             <div className={styles.imagePlaceholder}>
+              {/* Для URL из внешнего API отключаем оптимизацию Next Image, чтобы не зависеть от домена хранилища */}
               <Image
                 src={item.image}
                 alt={item.alt}
@@ -192,16 +244,59 @@ export function SeriesCarousel({
                 sizes={item.sizes}
                 className={styles.image}
                 priority={index === 0}
+                unoptimized={typeof item.image === "string"}
               />
             </div>
             <figcaption className={styles.caption}>
-              <h2 className={styles.title}>{item.title}</h2>
-              <p className={metaClassName}>{item.meta}</p>
+              <h2 className={styles.title}>
+                {item.title}
+                {/* Год показываем только здесь: рядом с названием через точку */}
+                {trimmedYear ? <span className={styles.titleYear}> • {trimmedYear}</span> : null}
+              </h2>
+              {/* Короткий текст о работе показываем сразу после названия, если он заполнен */}
+              {trimmedDescription ? (
+                <div className={styles.descriptionBlock}>
+                  <p
+                    className={[
+                      styles.description,
+                      isDescriptionExpanded ? styles.descriptionExpanded : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    ref={(node) => {
+                      descriptionRefs.current[index] = node;
+                    }}
+                    style={
+                      descriptionMaxHeight !== undefined
+                        ? { maxHeight: `${descriptionMaxHeight}px` }
+                        : undefined
+                    }
+                  >
+                    {trimmedDescription}
+                  </p>
+                  <button
+                    type="button"
+                    className={[
+                      styles.descriptionToggle,
+                      isDescriptionExpanded ? styles.descriptionToggleExpanded : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    aria-expanded={isDescriptionExpanded}
+                    aria-label={isDescriptionExpanded ? "Свернуть описание" : "Показать описание полностью"}
+                    onClick={(event) => toggleDescription(event, index)}
+                  >
+                    <span className={styles.descriptionChevron} aria-hidden="true" />
+                  </button>
+                </div>
+              ) : null}
+              {/* Подпись с деталями работы показываем только когда это явно включено */}
+              {showMeta && trimmedMeta ? <p className={metaClassName}>{trimmedMeta}</p> : null}
             </figcaption>
           </figure>
         );
 
-        /* Один общий обработчик снимает размытие при наведении или фокусе */
+        /* Один общий обработчик подсвечивает карточку при наведении или фокусе */
         const activateCard = () => setActiveIndex(index);
 
         const href = item.href ?? "";
@@ -222,7 +317,6 @@ export function SeriesCarousel({
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;
-                node.style.setProperty("--card-visibility", "0");
               } else {
                 cardRefs.current[index] = null;
               }
@@ -239,7 +333,7 @@ export function SeriesCarousel({
               <a
                 href={href}
                 className={styles.cardLink}
-                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                /* При фокусе клавиатурой также подсвечиваем выбранную карточку */
                 onFocus={activateCard}
               >
                 {cardContent}
@@ -248,7 +342,7 @@ export function SeriesCarousel({
               <Link
                 href={href}
                 className={styles.cardLink}
-                /* При фокусе клавиатурой также снимаем размытие с выбранной карточки */
+                /* При фокусе клавиатурой также подсвечиваем выбранную карточку */
                 onFocus={activateCard}
               >
                 {cardContent}

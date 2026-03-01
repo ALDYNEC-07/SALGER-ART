@@ -1,11 +1,10 @@
 /* 
  Этот файл собирает всю одностраничную галерею в Next.js.
- Он показывает шапку, блок Hero, галерею серий и манифест о проекте на одной странице.
- Он позволяет прокручивать страницу по якорям и переходить к нужному разделу без перезагрузки.
+ Он показывает шапку, блок Hero, ленту серий, манифест и футер.
+ Он позволяет перейти к серии и к якорным разделам без перезагрузки страницы.
 */
-/* Берём данные галереи из отдельного файла, чтобы добавлять серии без правки страницы */
-import { gallerySeries } from "../data/gallerySeries";
-/* Подключаем готовую шапку сайта с логотипом и меню из одного места */
+
+/* Берём готовую шапку сайта с логотипом и меню из одного места */
 import {
   SiteHeader,
   type SiteNavItem,
@@ -13,19 +12,44 @@ import {
 /* Подключаем главный экран с приветствием, чтобы он не загромождал файл страницы */
 import { HeroSection } from "./components/HeroSection/HeroSection";
 /* Подключаем ленту серий, где видно превью каждой подборки */
-import { GalleryStrip } from "./components/GalleryStrip/GalleryStrip";
+import {
+  GalleryStrip,
+  type GalleryStripItem,
+} from "./components/GalleryStrip/GalleryStrip";
 /* Подключаем блок с манифестом проекта, чтобы редактировать текст отдельно */
 import { AboutSection } from "./components/AboutSection/AboutSection";
 /* Подключаем общий футер со ссылками, чтобы не копировать его между страницами */
 import { SiteFooter } from "./components/SiteFooter/SiteFooter";
 /* Берём пункты меню из файла настроек, чтобы менять список один раз */
 import { getNavItems } from "./config/navConfig";
+/* Загружаем список серий из Supabase из единого слоя данных */
+import { getSeries } from "../lib/supabase";
 
-export default function Home() {
+/* Преобразуем данные серии в формат карточек, который ожидает лента галереи */
+const toGalleryStripItems = (
+  seriesList: Awaited<ReturnType<typeof getSeries>>
+): GalleryStripItem[] => {
+  return seriesList.map((series) => ({
+    slug: series.slug,
+    title: series.title,
+    meta: series.description,
+    image: series.cover_image_url || "/Logo.png",
+    alt: series.title,
+  }));
+};
+
+export default async function Home() {
   /* Получаем пункты меню для этой страницы из общего списка */
   const navItems: SiteNavItem[] = getNavItems("home");
-  /* Используем общий список серий для карточек на ленте */
-  const gallerySeriesPreview = gallerySeries;
+
+  /* Загружаем серии из Supabase; при ошибке оставляем пустой список, чтобы страница не падала */
+  let gallerySeriesPreview: GalleryStripItem[] = [];
+  try {
+    const seriesRows = await getSeries();
+    gallerySeriesPreview = toGalleryStripItems(seriesRows);
+  } catch {
+    gallerySeriesPreview = [];
+  }
 
   return (
     <>

@@ -9,7 +9,6 @@ import type { SiteNavItem } from "../components/SiteHeader/SiteHeader";
 const homeNavItems: SiteNavItem[] = [
   { label: "Главная", href: "#hero", isActive: true },
   { label: "Галерея", href: "#gallery" },
-  { label: "Серии", href: "/series" },
   { label: "О проекте", href: "#about" },
 ];
 
@@ -17,7 +16,6 @@ const homeNavItems: SiteNavItem[] = [
 const seriesNavItems: SiteNavItem[] = [
   { label: "Главная", href: "/" },
   { label: "Галерея", href: "/#gallery" },
-  { label: "Серии", href: "/series", isActive: true },
   { label: "О проекте", href: "/#about" },
 ];
 

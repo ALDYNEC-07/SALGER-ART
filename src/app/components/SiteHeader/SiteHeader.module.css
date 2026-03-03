@@ -60,6 +60,7 @@
   cursor: pointer;
   color: #111111;
   gap: 6px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .navBar {
@@ -67,6 +68,16 @@
   width: 2.3rem;
   height: 1.2px;
   background-color: currentColor;
+  transform-origin: center;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.navCheckbox:checked + .navToggle .navBar:first-child {
+  transform: translateY(3.6px) rotate(45deg);
+}
+
+.navCheckbox:checked + .navToggle .navBar:last-child {
+  transform: translateY(-3.6px) rotate(-45deg);
 }
 
 .navList {
@@ -109,6 +120,13 @@
   text-transform: uppercase;
   line-height: 1.9;
   color: #111;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navLink:hover,
+.navLink:active,
+.navLink:focus-visible {
+  text-decoration: none;
 }
 
 .navLinkActive {

@@ -30,8 +30,7 @@ export function AboutSection() {
                 <div className={styles.manifestFrame}>
                   <p className={styles.manifestLabel}>Кураторская коллекция</p>
                   <p className={styles.manifestLead}>
-                    SALGER ART собирает исторические личности в формате цифровой афиши:
-                    через характер, пластику лица и атмосферу эпохи.
+                    SALGER ART создает цифровые афиши, где исторические личности оживают через характер, черты лица и атмосферу времени.
                   </p>
                   {/* Второй абзац поясняет, что именно увидит посетитель в каждой серии */}
                   <p className={styles.manifestBody}>

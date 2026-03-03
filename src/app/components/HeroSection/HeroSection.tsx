@@ -1,19 +1,16 @@
 /* 
  Этот файл описывает главный экран галереи.
- Он показывает портрет автора и слоганы сразу при загрузке страницы.
- Он даёт ссылку, которая ведёт посетителя вниз к списку серий.
+ Он показывает картину на весь экран и краткое приветствие проекта.
+ Он даёт одну основную кнопку для перехода к каталогу серий.
 */
 "use client";
 
-import Image from "next/image";
-/* Портрет автора, вынесенный на главный экран */
-import authorImage from "../../assets/Author.jpg";
 import styles from "./HeroSection.module.css";
 
 export function HeroSection() {
   return (
     <>
-      {/* Главный экран с портретом автора и слоганом, чтобы встречать посетителя при входе */}
+      {/* Главный экран с фоновой картиной и слоганом, чтобы встречать посетителя при входе */}
       <section
         id="hero"
         className={`page ${styles.pageHome}`}
@@ -22,22 +19,7 @@ export function HeroSection() {
         <div className={styles.hero}>
           <div className={styles.heroInner}>
             <div className={styles.heroLayout}>
-              {/* Визуальный блок в рамке, где портрет автора задаёт тон галерее */}
-              <div className={styles.heroMedia}>
-                {/* Портрет автора в фирменной рамке на первом экране */}
-                <div className={styles.heroMediaNote}>
-                  <Image
-                    src={authorImage}
-                    alt="Портрет автора SALGER ART"
-                    fill
-                    sizes="(max-width: 768px) 92vw, 640px"
-                    priority
-                    className={styles.heroPortrait}
-                  />
-                </div>
-              </div>
-
-              {/* Текстовая часть с подписью, заголовком и подзаголовком рядом с портретом */}
+              {/* Текстовый блок кратко объясняет идею галереи и остаётся легко читаемым поверх фона */}
               <div className={styles.heroContent}>
                 <p className={styles.heroEyebrow}>Кураторская онлайн-галерея</p>
                 <h1 id="hero-title" className={styles.heroTitle}>
@@ -46,15 +28,12 @@ export function HeroSection() {
                 <p className={styles.heroSubtitle}>
                   Цифровые портреты, собранные как музейная афиша.
                 </p>
-              </div>
-            </div>
 
-            {/* Подсказка для прокрутки к галерее ниже по странице; плавность задаёт CSS без JS */}
-            <div className={styles.heroScroll}>
-              {/* Кнопка-прокрутка отправляет к блоку галереи */}
-              <a className={styles.heroScrollLink} href="#gallery">
-                <span className={styles.heroScrollIcon} aria-hidden="true"></span>
-              </a>
+                {/* Одна главная кнопка ведёт посетителя к каталогу серий */}
+                <a className={styles.heroCta} href="#gallery">
+                  Смотреть галерею
+                </a>
+              </div>
             </div>
           </div>
         </div>

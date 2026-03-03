@@ -170,6 +170,14 @@ export function SeriesCarousel({
     });
   };
 
+  /* После сворачивания текста возвращаем пользователя в самое начало страницы */
+  const scrollPageToTopAfterCollapse = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   /* Управляем полосой клавиатурой: стрелки двигают к соседним карточкам */
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!cardRefs.current.length) {
@@ -197,11 +205,16 @@ export function SeriesCarousel({
     event.preventDefault();
     event.stopPropagation();
     const descriptionToggleKey = `${itemsSignature}:${index}`;
+    const isExpandedNow = expandedDescriptions[descriptionToggleKey] === true;
 
     setExpandedDescriptions((prevState) => ({
       ...prevState,
       [descriptionToggleKey]: !prevState[descriptionToggleKey],
     }));
+
+    if (isExpandedNow) {
+      scrollPageToTopAfterCollapse();
+    }
   };
 
   return (

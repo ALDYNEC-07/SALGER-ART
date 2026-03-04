@@ -11,6 +11,21 @@
   margin-bottom: clamp(0.6rem, 1.6vw, 1.05rem);
 }
 
+.galleryHeader {
+  position: relative;
+}
+
+.galleryHeadingRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.galleryHeadingRow :global(.page-title) {
+  margin-bottom: 0;
+}
+
 .galleryKicker {
   margin: 0 0 0.38rem;
   font-size: 0.72rem;
@@ -18,4 +33,139 @@
   text-transform: uppercase;
   color: rgba(40, 30, 20, 0.58);
   font-weight: 600;
+}
+
+.quickJump {
+  position: relative;
+}
+
+.quickJumpToggle {
+  min-height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(35, 26, 17, 0.24);
+  background: rgba(253, 249, 242, 0.84);
+  color: #1f1710;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.quickJumpToggle::-webkit-details-marker {
+  display: none;
+}
+
+.quickJumpToggle:hover {
+  background: rgba(255, 252, 246, 0.98);
+  border-color: rgba(35, 26, 17, 0.38);
+}
+
+.quickJump[open] .quickJumpToggle {
+  background: rgba(245, 237, 224, 0.94);
+  border-color: rgba(35, 26, 17, 0.44);
+}
+
+.quickJumpIcon {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.28rem;
+  border: 1px solid rgba(31, 23, 16, 0.42);
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 14%,
+      rgba(31, 23, 16, 0.82) 14%,
+      rgba(31, 23, 16, 0.82) 24%,
+      transparent 24%,
+      transparent 40%,
+      rgba(31, 23, 16, 0.82) 40%,
+      rgba(31, 23, 16, 0.82) 50%,
+      transparent 50%,
+      transparent 66%,
+      rgba(31, 23, 16, 0.82) 66%,
+      rgba(31, 23, 16, 0.82) 76%,
+      transparent 76%
+    );
+}
+
+.quickJumpText {
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.quickJumpPanel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.56rem);
+  z-index: 5;
+  width: min(90vw, 19rem);
+  max-height: min(60vh, 22rem);
+  overflow: auto;
+  padding: 0.72rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 18px 38px rgba(35, 26, 17, 0.16),
+    0 2px 8px rgba(35, 26, 17, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.quickJumpCaption {
+  margin: 0 0 0.46rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(40, 30, 20, 0.58);
+}
+
+.quickJumpList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.quickJumpItem {
+  margin: 0;
+}
+
+.quickJumpLink {
+  display: block;
+  padding: 0.4rem 0.58rem;
+  border-radius: 0.58rem;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: rgba(27, 20, 13, 0.88);
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.quickJumpLink:hover {
+  text-decoration: none;
+  background: rgba(243, 235, 222, 0.95);
+  color: #1f1710;
+}
+
+@media (max-width: 640px) {
+  .galleryHeadingRow {
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .quickJumpPanel {
+    right: 0;
+    left: auto;
+    width: min(92vw, 17.5rem);
+  }
 }

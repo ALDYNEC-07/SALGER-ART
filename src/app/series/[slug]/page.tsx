@@ -181,7 +181,7 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
               </h1>
               {/* Под заголовком показываем номер серии и дату публикации */}
               <p className={styles.seriesHeaderYear}>
-                Серия №{seriesNumberLabel} • Добавлено {seriesAddedDateLabel}
+                Серия {seriesNumberLabel} • Добавлено {seriesAddedDateLabel}
               </p>
             </header>
           </div>

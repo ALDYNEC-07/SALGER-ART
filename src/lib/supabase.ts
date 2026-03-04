@@ -14,6 +14,7 @@ export type SupabaseSeriesRow = {
   title: string;
   description: string;
   cover_image_url: string;
+  created_at: string;
   sort_order: number | null;
   published: boolean;
 };
@@ -71,6 +72,7 @@ const normalizeSeriesRow = (row: RawSupabaseRow): SupabaseSeriesRow => {
     title: toText(row.title),
     description: toText(row.description),
     cover_image_url: toText(row.cover_image_url),
+    created_at: toText(row.created_at),
     sort_order: toNumber(row.sort_order),
     published: toBoolean(row.published),
   };
@@ -132,7 +134,7 @@ const buildSeriesUrl = (url: string): string => {
   const requestUrl = new URL("/rest/v1/series", url);
   requestUrl.searchParams.set(
     "select",
-    "id,slug,title,description,cover_image_url,sort_order,published"
+    "id,slug,title,description,cover_image_url,created_at,sort_order,published"
   );
   requestUrl.searchParams.set("published", "eq.true");
   requestUrl.searchParams.set("order", "sort_order.asc");
@@ -143,7 +145,7 @@ const buildSeriesBySlugUrl = (url: string, slug: string): string => {
   const requestUrl = new URL("/rest/v1/series", url);
   requestUrl.searchParams.set(
     "select",
-    "id,slug,title,description,cover_image_url,sort_order,published"
+    "id,slug,title,description,cover_image_url,created_at,sort_order,published"
   );
   requestUrl.searchParams.set("published", "eq.true");
   requestUrl.searchParams.set("slug", `eq.${slug}`);

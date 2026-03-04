@@ -11,6 +11,11 @@ import {
 } from "./components/SiteHeader/SiteHeader";
 /* Подключаем главный экран с приветствием, чтобы он не загромождал файл страницы */
 import { HeroSection } from "./components/HeroSection/HeroSection";
+/* Подключаем отдельный кураторский блок «экспонат дня» между приветствием и каталогом */
+import {
+  FeaturedExhibit,
+  type FeaturedExhibitItem,
+} from "./components/FeaturedExhibit/FeaturedExhibit";
 /* Подключаем ленту серий, где видно превью каждой подборки */
 import {
   GalleryStrip,
@@ -29,13 +34,62 @@ import { getSeries } from "../lib/supabase";
 const toGalleryStripItems = (
   seriesList: Awaited<ReturnType<typeof getSeries>>
 ): GalleryStripItem[] => {
-  return seriesList.map((series) => ({
+  return seriesList.map((series, index) => ({
     slug: series.slug,
     title: series.title,
-    meta: series.description,
-    image: series.cover_image_url || "/Logo.png",
+    description: series.description,
+    seriesNumber:
+      typeof series.sort_order === "number" && Number.isFinite(series.sort_order)
+        ? series.sort_order
+        : index + 1,
+    addedAt: series.created_at,
+    image: series.cover_image_url,
     alt: series.title,
   }));
+};
+
+/* Берём последнюю личность прямо из текущего списка, чтобы блок совпадал с порядком галереи */
+const getLatestFeaturedExhibitFromList = (
+  seriesList: GalleryStripItem[]
+): GalleryStripItem | null => {
+  if (seriesList.length === 0) {
+    return null;
+  }
+
+  return seriesList[seriesList.length - 1] ?? null;
+};
+
+/* Приводим данные серии к формату блока «экспонат дня», чтобы там оставался смысловой текст */
+const toFeaturedExhibitItem = (
+  item: GalleryStripItem | null
+): FeaturedExhibitItem | null => {
+  if (!item) {
+    return null;
+  }
+
+  return {
+    slug: item.slug,
+    title: item.title,
+    meta: item.description,
+    image: item.image,
+    alt: item.alt,
+  };
+};
+
+/* Форматируем подпись даты добавления для блока «экспонат дня» */
+const getFeaturedDateLabel = (value: string): string => {
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Дата добавления не указана";
+  }
+
+  const formattedDate = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(parsedDate);
+  return formattedDate;
 };
 
 export default async function Home() {
@@ -50,6 +104,10 @@ export default async function Home() {
   } catch {
     gallerySeriesPreview = [];
   }
+  /* Берём последнюю добавленную серию: экспонат меняется только после нового пополнения базы */
+  const latestFeaturedSeries = getLatestFeaturedExhibitFromList(gallerySeriesPreview);
+  const featuredExhibit = toFeaturedExhibitItem(latestFeaturedSeries);
+  const featuredDateLabel = getFeaturedDateLabel(latestFeaturedSeries?.addedAt || "");
 
   return (
     <>
@@ -59,6 +117,9 @@ export default async function Home() {
       <main>
         {/* Главный экран с приветствием и ссылкой к галерее */}
         <HeroSection />
+
+        {/* Кураторский акцент дня: одна серия показывается крупно перед всей лентой */}
+        <FeaturedExhibit item={featuredExhibit} dateLabel={featuredDateLabel} />
 
         {/* Лента серий с карточками, чтобы перейти к нужной подборке */}
         <GalleryStrip series={gallerySeriesPreview} />

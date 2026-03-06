@@ -50,6 +50,13 @@
   letter-spacing: 0.015em;
 }
 
+.previewAct {
+  font-size: 0.58em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(53, 42, 30, 0.78);
+}
+
 .previewDescription {
   margin: 0;
   max-width: 58ch;
@@ -62,6 +69,13 @@
 .listColumn {
   border-left: 1px solid rgba(32, 24, 16, 0.12);
   padding-left: clamp(0.8rem, 1.8vw, 1.25rem);
+}
+
+.listProgress {
+  margin: 0 0 0.7rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  color: rgba(51, 40, 29, 0.66);
 }
 
 .workList {
@@ -118,11 +132,29 @@
   min-width: 0;
 }
 
+.workTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .workTitle {
   font-size: 0.96rem;
   line-height: 1.34;
   letter-spacing: 0.002em;
   text-wrap: balance;
+}
+
+.workAct {
+  flex-shrink: 0;
+  padding: 0.08rem 0.38rem;
+  border-radius: 999px;
+  border: 1px solid rgba(42, 32, 23, 0.2);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(52, 41, 31, 0.72);
 }
 
 .workYear {

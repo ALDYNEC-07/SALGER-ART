@@ -3,6 +3,8 @@
   --card-aspect: 68%;
   --card-height-extra: 200px;
   --rail-gap: clamp(18px, 3vw, 42px);
+  --rail-inline-gutter: clamp(0.5rem, 2vw, 1.25rem);
+  --rail-side-space: max(var(--rail-inline-gutter), calc((100vw - var(--card-width)) / 2));
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
@@ -12,18 +14,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: var(--space-m);
-  padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  padding-inline: var(--rail-side-space);
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  scroll-padding-inline: var(--rail-side-space);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-.rail::before,
-.rail::after {
-  content: "";
-  flex: 0 0 calc((100% - var(--card-width)) / 2 - var(--rail-gap));
 }
 
 .rail::-webkit-scrollbar {
@@ -276,11 +272,6 @@
     flex-wrap: wrap;
     column-gap: clamp(0.95rem, 1.8vw, 1.4rem);
     row-gap: clamp(1rem, 2.2vw, 1.55rem);
-  }
-
-  .rail::before,
-  .rail::after {
-    content: none;
   }
 
   .card {

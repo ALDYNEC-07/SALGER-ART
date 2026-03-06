@@ -3,6 +3,7 @@
 Use this checklist in the `Manual checks` section of the report.
 
 ## 1) Behavior and Regressions
+- [ ] Review scope includes unstaged, staged, and committed-vs-upstream changes.
 - [ ] Main user flow still works after changes.
 - [ ] No new console errors or visible runtime failures.
 - [ ] Empty/loading/error states are handled.

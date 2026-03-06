@@ -11,8 +11,18 @@ Run a strict review of current changes and produce a merge decision.
 
 1. Collect scope of review.
 - Run `git status --short`.
-- Run `git diff --name-only --diff-filter=ACMRTUXB`.
-- If needed, inspect staged and unstaged separately.
+- Collect unstaged files: `git diff --name-only --diff-filter=ACMRTUXB`.
+- Collect staged files: `git diff --cached --name-only --diff-filter=ACMRTUXB`.
+- Collect committed-but-not-merged files against upstream:
+  - `UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null || true)`
+  - If `UPSTREAM` is not empty:
+    - `BASE=$(git merge-base HEAD "$UPSTREAM")`
+    - `git diff --name-only --diff-filter=ACMRTUXB "$BASE"...HEAD`
+  - If `UPSTREAM` is empty, fallback:
+    - try `origin/main`, then `origin/master`
+    - use `BASE=$(git merge-base HEAD <fallback-branch>)`
+    - run `git diff --name-only --diff-filter=ACMRTUXB "$BASE"...HEAD`
+- Build one deduplicated review file list from all sources above. Do not review only working tree diff when branch has local commits.
 
 2. Review changed files for behavior and regressions.
 - Focus on runtime behavior, broken flows, and side effects.
@@ -41,6 +51,7 @@ Run a strict review of current changes and produce a merge decision.
 
 6. Produce final report in this exact structure:
 - `Verdict: GO` or `Verdict: NO-GO`
+- `Scope summary:` what sources were used (`unstaged`, `staged`, `committed-vs-upstream`) and how many files were reviewed
 - `Findings:`
   - `Critical`
   - `Major`
@@ -62,6 +73,12 @@ If any `Critical` exists, return `Verdict: NO-GO`.
 
 ```text
 Verdict: GO|NO-GO
+
+Scope summary:
+- unstaged: <count/files>
+- staged: <count/files>
+- committed-vs-upstream: <count/files>
+- deduplicated total: <count/files>
 
 Findings:
 Critical:

@@ -1,13 +1,17 @@
 /* 
  Этот файл задаёт режим «кураторского зала» для страницы серии.
  Он показывает одну большую активную работу и список остальных работ рядом.
- Он позволяет выбирать работу из списка и сразу видеть её крупно с описанием.
+ Он позволяет выбирать работу из списка, видеть прогресс и путь серии по трём актам.
 */
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import type { SeriesCarouselItem } from "../SeriesCarousel/SeriesCarousel";
+import {
+  formatProgressValue,
+  getActLabelByIndex,
+} from "../seriesStory/seriesStoryActs";
 import styles from "./SeriesCuratedHall.module.css";
 
 type SeriesCuratedHallProps = {
@@ -23,8 +27,9 @@ const getSafeIndex = (index: number, length: number): number => {
   return Math.max(0, Math.min(index, length - 1));
 };
 
+
 export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) {
-  /* Храним номер выбранной работы, чтобы показывать её в большом формате */
+  /* Запоминаем номер выбранной работы, чтобы показывать её в большом формате */
   const [activeIndex, setActiveIndex] = useState(0);
   const safeActiveIndex = getSafeIndex(activeIndex, items.length);
   const activeItem = items[safeActiveIndex] ?? null;
@@ -40,6 +45,10 @@ export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) 
 
   const activeYear = (activeItem.year ?? "").trim();
   const activeDescription = (activeItem.description ?? "").trim();
+  /* Для выбранной работы считаем акт и формируем строку прогресса справа */
+  const activeAct = getActLabelByIndex(safeActiveIndex, items.length);
+  const progressCurrent = formatProgressValue(safeActiveIndex + 1);
+  const progressTotal = formatProgressValue(items.length);
 
   return (
     <section className={styles.hall} aria-label={ariaLabel}>
@@ -59,6 +68,7 @@ export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) 
           <figcaption className={styles.previewCaption}>
             <h2 className={styles.previewTitle}>
               {activeItem.title}
+              <span className={styles.previewAct}> — {activeAct}</span>
               {activeYear ? <span className={styles.previewYear}> • {activeYear}</span> : null}
             </h2>
             {activeDescription ? (
@@ -70,11 +80,16 @@ export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) 
 
       {/* Справа даём список всех работ серии, чтобы быстро переключаться между ними */}
       <aside className={styles.listColumn} aria-label="Список работ серии">
+        {/* Показываем текущее положение в серии: выбранная работа из общего числа */}
+        <p className={styles.listProgress}>
+          {progressCurrent} / {progressTotal}
+        </p>
         <ol className={styles.workList}>
           {items.map((item, index) => {
             const itemYear = (item.year ?? "").trim();
             const isActive = index === safeActiveIndex;
             const itemKey = `${item.title}-${index}`;
+            const itemAct = getActLabelByIndex(index, items.length);
 
             return (
               <li key={itemKey} className={styles.workListItem}>
@@ -94,7 +109,10 @@ export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) 
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className={styles.workText}>
-                    <span className={styles.workTitle}>{item.title}</span>
+                    <span className={styles.workTitleRow}>
+                      <span className={styles.workTitle}>{item.title}</span>
+                      <span className={styles.workAct}>{itemAct}</span>
+                    </span>
                     {itemYear ? <span className={styles.workYear}>{itemYear}</span> : null}
                   </span>
                 </button>

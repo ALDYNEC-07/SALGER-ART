@@ -25,11 +25,16 @@ import { getSeries } from "../../lib/supabase";
 const toGalleryStripItems = (
   seriesList: Awaited<ReturnType<typeof getSeries>>
 ): GalleryStripItem[] => {
-  return seriesList.map((series) => ({
+  return seriesList.map((series, index) => ({
     slug: series.slug,
     title: series.title,
-    meta: series.description,
-    image: series.cover_image_url || "/Logo.png",
+    description: series.description,
+    seriesNumber:
+      typeof series.sort_order === "number" && Number.isFinite(series.sort_order)
+        ? series.sort_order
+        : index + 1,
+    addedAt: series.created_at,
+    image: series.cover_image_url || "Не загрузилось, обновите страницу!",
     alt: series.title,
   }));
 };

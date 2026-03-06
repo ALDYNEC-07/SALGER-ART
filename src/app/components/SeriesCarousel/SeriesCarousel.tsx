@@ -6,10 +6,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent, TouchEvent, WheelEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
+import {
+  formatProgressValue,
+  getActLabelByIndex,
+} from "../seriesStory/seriesStoryActs";
 import styles from "./SeriesCarousel.module.css";
 
 export type SeriesCarouselItem = {
@@ -31,7 +35,15 @@ type SeriesCarouselProps = {
   tabIndex?: number;
   metaTone?: "default" | "series";
   showMeta?: boolean;
+  showStoryProgressOnMobile?: boolean;
 };
+
+/* Минимальный сдвиг по колёсику, чтобы считать жест реальным, а не шумом */
+const WHEEL_DELTA_THRESHOLD = 0.1;
+/* Минимальный сдвиг пальца, чтобы отделить свайп от случайной дрожи */
+const TOUCH_MOVE_THRESHOLD = 6;
+/* Запас по горизонтали: движение должно быть заметно "вбок", а не диагональю вниз */
+const HORIZONTAL_INTENT_RATIO = 1.2;
 
 export function SeriesCarousel({
   items,
@@ -40,6 +52,7 @@ export function SeriesCarousel({
   tabIndex = 0,
   metaTone = "default",
   showMeta = false,
+  showStoryProgressOnMobile = false,
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -55,6 +68,8 @@ export function SeriesCarousel({
   const [descriptionHeights, setDescriptionHeights] = useState<
     Record<number, { collapsed: number; full: number }>
   >({});
+  /* Запоминаем точку касания, чтобы отличить настоящий свайп от случайной дрожи пальца */
+  const touchStartPointRef = useRef<{ x: number; y: number } | null>(null);
 
   /* Составляем строку, чтобы понять, изменился ли список карточек, и не гонять эффект зря */
   const itemsSignature = items.map((item) => item.id).join("|");
@@ -178,6 +193,129 @@ export function SeriesCarousel({
     });
   };
 
+  /* Делаем ключ для конкретного описания, чтобы одинаково работать с кликом и автосворачиванием */
+  const getDescriptionToggleKey = (index: number) => `${itemsSignature}:${index}`;
+
+  /* Понимаем, раскрыт ли текст именно у текущей активной карточки */
+  const isActiveDescriptionExpanded =
+    expandedDescriptions[getDescriptionToggleKey(safeActiveIndex)] === true;
+
+  /* Сворачиваем текст у активной карточки и возвращаем признак, что сворачивание действительно произошло */
+  const collapseActiveDescription = (): boolean => {
+    if (!isActiveDescriptionExpanded) {
+      return false;
+    }
+
+    const activeDescriptionKey = getDescriptionToggleKey(safeActiveIndex);
+    setExpandedDescriptions((prevState) => ({
+      ...prevState,
+      [activeDescriptionKey]: false,
+    }));
+
+    return true;
+  };
+
+  /* Проверяем, может ли лента реально прокручиваться влево-вправо */
+  const canRailScrollHorizontally = (): boolean => {
+    const railElement = railRef.current;
+    if (!railElement) {
+      return false;
+    }
+
+    return railElement.scrollWidth - railElement.clientWidth > 1;
+  };
+
+  /* Определяем, пытается ли человек листать именно карточки вбок, а не страницу вниз */
+  const isHorizontalSlideIntent = (deltaX: number, deltaY: number): boolean => {
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+    return absDeltaX > WHEEL_DELTA_THRESHOLD && absDeltaX > absDeltaY * HORIZONTAL_INTENT_RATIO;
+  };
+
+  /* На колёсике мыши и трекпаде первый горизонтальный скролл только закрывает текст */
+  const handleRailWheel = (event: WheelEvent<HTMLDivElement>) => {
+    const hasScrollIntent =
+      Math.abs(event.deltaX) > WHEEL_DELTA_THRESHOLD ||
+      Math.abs(event.deltaY) > WHEEL_DELTA_THRESHOLD;
+    if (!hasScrollIntent) {
+      return;
+    }
+
+    const hasHorizontalIntent =
+      isHorizontalSlideIntent(event.deltaX, event.deltaY) ||
+      (event.shiftKey && Math.abs(event.deltaY) > 0.1);
+    if (!hasHorizontalIntent) {
+      return;
+    }
+
+    if (!canRailScrollHorizontally()) {
+      return;
+    }
+
+    const collapsed = collapseActiveDescription();
+    if (!collapsed) {
+      return;
+    }
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    event.stopPropagation();
+  };
+
+  /* На мобильных фиксируем старт касания, чтобы дальше проверить, было ли реальное движение */
+  const handleRailTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const firstTouch = event.touches[0];
+    if (!firstTouch) {
+      return;
+    }
+
+    touchStartPointRef.current = {
+      x: firstTouch.clientX,
+      y: firstTouch.clientY,
+    };
+  };
+
+  /* Первый свайп вбок при раскрытом тексте закрывает его и останавливает пролистывание */
+  const handleRailTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    if (!isActiveDescriptionExpanded) {
+      return;
+    }
+
+    const firstTouch = event.touches[0];
+    const touchStartPoint = touchStartPointRef.current;
+    if (!firstTouch || !touchStartPoint) {
+      return;
+    }
+
+    const deltaX = Math.abs(firstTouch.clientX - touchStartPoint.x);
+    const deltaY = Math.abs(firstTouch.clientY - touchStartPoint.y);
+    const hasHorizontalIntent =
+      deltaX > TOUCH_MOVE_THRESHOLD && deltaX > deltaY * HORIZONTAL_INTENT_RATIO;
+    if (!hasHorizontalIntent) {
+      return;
+    }
+
+    if (!canRailScrollHorizontally()) {
+      return;
+    }
+
+    const collapsed = collapseActiveDescription();
+    if (!collapsed) {
+      return;
+    }
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    event.stopPropagation();
+  };
+
+  /* После завершения касания очищаем стартовую точку, чтобы следующий жест считался отдельно */
+  const resetRailTouchStartPoint = () => {
+    touchStartPointRef.current = null;
+  };
+
   /* Управляем полосой клавиатурой: стрелки двигают к соседним карточкам */
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!cardRefs.current.length) {
@@ -204,7 +342,7 @@ export function SeriesCarousel({
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    const descriptionToggleKey = `${itemsSignature}:${index}`;
+    const descriptionToggleKey = getDescriptionToggleKey(index);
     const isExpandedNow = expandedDescriptions[descriptionToggleKey] === true;
 
     setExpandedDescriptions((prevState) => ({
@@ -224,18 +362,28 @@ export function SeriesCarousel({
       role="list"
       ref={railRef}
       onKeyDown={handleKeyDown}
+      onWheel={handleRailWheel}
+      onTouchStart={handleRailTouchStart}
+      onTouchMove={handleRailTouchMove}
+      onTouchEnd={resetRailTouchStartPoint}
+      onTouchCancel={resetRailTouchStartPoint}
       tabIndex={tabIndex}
     >
       {items.map((item, index) => {
         const metaClassName = [styles.meta, metaTone === "series" ? styles.metaSeries : ""]
           .filter(Boolean)
           .join(" ");
+        const isActiveCard = safeActiveIndex === index;
         /* Готовим подпись с годом, чтобы показать её рядом с названием работы */
         const trimmedYear = (item.year ?? "").trim();
         /* Берём описание из базы, чтобы вывести его сразу после названия отдельным блоком */
         const trimmedDescription = (item.description ?? "").trim();
         const trimmedMeta = item.meta.trim();
-        const descriptionToggleKey = `${itemsSignature}:${index}`;
+        /* Для активной карточки в мобильном режиме показываем акт и прогресс */
+        const mobileActLabel = getActLabelByIndex(index, items.length);
+        const mobileProgressCurrent = formatProgressValue(index + 1);
+        const mobileProgressTotal = formatProgressValue(items.length);
+        const descriptionToggleKey = getDescriptionToggleKey(index);
         const isDescriptionExpanded = expandedDescriptions[descriptionToggleKey] === true;
         const descriptionHeight = descriptionHeights[index];
         const descriptionMaxHeight = descriptionHeight
@@ -259,6 +407,15 @@ export function SeriesCarousel({
               />
             </div>
             <figcaption className={styles.caption}>
+              {/* В мобильной серии показываем текущий акт и положение карточки */}
+              {showStoryProgressOnMobile && isActiveCard ? (
+                <p className={styles.storyLine}>
+                  <span className={styles.storyBadge}>{mobileActLabel}</span>
+                  <span className={styles.storyProgress}>
+                    {mobileProgressCurrent} / {mobileProgressTotal}
+                  </span>
+                </p>
+              ) : null}
               <h2 className={styles.title}>
                 {item.title}
                 {/* Год показываем только здесь: рядом с названием через точку */}
@@ -320,10 +477,10 @@ export function SeriesCarousel({
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
             className={[
               styles.card,
-              safeActiveIndex === index ? styles.cardActive : styles.cardDim,
+              isActiveCard ? styles.cardActive : styles.cardDim,
             ].join(" ")}
             role="listitem"
-            aria-current={safeActiveIndex === index ? "true" : undefined}
+            aria-current={isActiveCard ? "true" : undefined}
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;

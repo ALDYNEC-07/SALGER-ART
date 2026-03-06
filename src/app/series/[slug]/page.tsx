@@ -49,6 +49,30 @@ const toTextValue = (value: unknown): string => {
   return "";
 };
 
+/* Берём номер серии из sort_order, а если его нет — подставляем id как безопасный резерв */
+const getSeriesNumberValue = (series: SupabaseSeriesRow): number => {
+  if (typeof series.sort_order === "number" && Number.isFinite(series.sort_order)) {
+    return series.sort_order;
+  }
+
+  return series.id > 0 ? series.id : 1;
+};
+
+/* Приводим дату добавления к читаемому виду для шапки страницы */
+const formatSeriesAddedDate = (value: string): string => {
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "дата не указана";
+  }
+
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(parsedDate);
+};
+
 /* Достаём порядок карточки из поля sort_order, чтобы список был предсказуемым */
 const getArtworkOrderValue = (artwork: SupabaseArtworkRow): number => {
   const orderField = artwork.sort_order;
@@ -100,6 +124,8 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
   const seriesTitle = toTextValue(currentSeries.title) || "Серия";
   const seriesIntro = toTextValue(currentSeries.description) || seriesTitle;
   const seriesCoverImage = toTextValue(currentSeries.cover_image_url) || "/Logo.png";
+  const seriesNumberLabel = String(getSeriesNumberValue(currentSeries)).padStart(2, "0");
+  const seriesAddedDateLabel = formatSeriesAddedDate(currentSeries.created_at);
 
   /* Сортируем работы по порядку из Supabase, а затем собираем карточки для общей карусели */
   const carouselItems: SeriesCarouselItem[] = [...seriesArtworks]
@@ -148,11 +174,15 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
               <span aria-current="page">{seriesTitle}</span>
             </nav>
 
-            {/* В шапке серии оставляем только вступление, чтобы не перегружать верх страницы */}
+            {/* В шапке серии показываем вступление и служебные данные о серии */}
             <header className={styles.seriesHeader}>
               <h1 id="series-title" className={styles.seriesHeaderIntro}>
                 {seriesIntro}
               </h1>
+              {/* Под заголовком показываем номер серии и дату публикации */}
+              <p className={styles.seriesHeaderYear}>
+                Серия {seriesNumberLabel} • Добавлено {seriesAddedDateLabel}
+              </p>
             </header>
           </div>
 
@@ -164,6 +194,8 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
                 items={carouselItems}
                 ariaLabel={`Работы серии «${seriesTitle}»`}
                 metaTone="series"
+                /* Для мобильной ленты включаем только акт и прогресс у текущей карточки */
+                showStoryProgressOnMobile
               />
             </div>
 

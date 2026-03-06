@@ -3,6 +3,8 @@
   --card-aspect: 68%;
   --card-height-extra: 200px;
   --rail-gap: clamp(18px, 3vw, 42px);
+  --rail-inline-gutter: clamp(0.5rem, 2vw, 1.25rem);
+  --rail-side-space: max(var(--rail-inline-gutter), calc((100vw - var(--card-width)) / 2));
 
   width: 100vw;
   margin-inline: calc(50% - 50vw);
@@ -12,18 +14,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding-block: var(--space-m);
-  padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  padding-inline: var(--rail-side-space);
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  scroll-padding-inline: var(--rail-side-space);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-.rail::before,
-.rail::after {
-  content: "";
-  flex: 0 0 calc((100% - var(--card-width)) / 2 - var(--rail-gap));
 }
 
 .rail::-webkit-scrollbar {
@@ -107,6 +103,32 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.storyLine {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.storyBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.52rem;
+  border-radius: 999px;
+  border: 1px solid rgba(38, 29, 20, 0.24);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(33, 25, 18, 0.78);
+}
+
+.storyProgress {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(49, 38, 27, 0.66);
 }
 
 .title {
@@ -278,11 +300,6 @@
     row-gap: clamp(1rem, 2.2vw, 1.55rem);
   }
 
-  .rail::before,
-  .rail::after {
-    content: none;
-  }
-
   .card {
     flex: 0 1 var(--card-width);
     width: min(var(--card-width), 100%);
@@ -299,5 +316,9 @@
   .cardActive .imagePlaceholder,
   .cardActive .image {
     animation: none;
+  }
+
+  .storyLine {
+    display: none;
   }
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pre-Merge Review Next.js"
+  short_description: "Strict pre-merge review for Next.js TypeScript changes"
+  default_prompt: "Use $pre-merge-review-nextjs to run a strict GO/NO-GO pre-merge review for my current changes."

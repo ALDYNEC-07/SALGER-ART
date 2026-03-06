@@ -10,6 +10,10 @@ import type { KeyboardEvent, MouseEvent } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
+import {
+  formatProgressValue,
+  getActLabelByIndex,
+} from "../seriesStory/seriesStoryActs";
 import styles from "./SeriesCarousel.module.css";
 
 export type SeriesCarouselItem = {
@@ -31,6 +35,7 @@ type SeriesCarouselProps = {
   tabIndex?: number;
   metaTone?: "default" | "series";
   showMeta?: boolean;
+  showStoryProgressOnMobile?: boolean;
 };
 
 export function SeriesCarousel({
@@ -40,6 +45,7 @@ export function SeriesCarousel({
   tabIndex = 0,
   metaTone = "default",
   showMeta = false,
+  showStoryProgressOnMobile = false,
 }: SeriesCarouselProps) {
   /* Запоминаем карточки, чтобы знать, куда скроллить и какую подсветить */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -230,11 +236,16 @@ export function SeriesCarousel({
         const metaClassName = [styles.meta, metaTone === "series" ? styles.metaSeries : ""]
           .filter(Boolean)
           .join(" ");
+        const isActiveCard = safeActiveIndex === index;
         /* Готовим подпись с годом, чтобы показать её рядом с названием работы */
         const trimmedYear = (item.year ?? "").trim();
         /* Берём описание из базы, чтобы вывести его сразу после названия отдельным блоком */
         const trimmedDescription = (item.description ?? "").trim();
         const trimmedMeta = item.meta.trim();
+        /* Для активной карточки в мобильном режиме показываем акт и прогресс */
+        const mobileActLabel = getActLabelByIndex(index, items.length);
+        const mobileProgressCurrent = formatProgressValue(index + 1);
+        const mobileProgressTotal = formatProgressValue(items.length);
         const descriptionToggleKey = `${itemsSignature}:${index}`;
         const isDescriptionExpanded = expandedDescriptions[descriptionToggleKey] === true;
         const descriptionHeight = descriptionHeights[index];
@@ -259,6 +270,15 @@ export function SeriesCarousel({
               />
             </div>
             <figcaption className={styles.caption}>
+              {/* В мобильной серии показываем текущий акт и положение карточки */}
+              {showStoryProgressOnMobile && isActiveCard ? (
+                <p className={styles.storyLine}>
+                  <span className={styles.storyBadge}>{mobileActLabel}</span>
+                  <span className={styles.storyProgress}>
+                    {mobileProgressCurrent} / {mobileProgressTotal}
+                  </span>
+                </p>
+              ) : null}
               <h2 className={styles.title}>
                 {item.title}
                 {/* Год показываем только здесь: рядом с названием через точку */}
@@ -320,10 +340,10 @@ export function SeriesCarousel({
             /* Сразу ставим нужный класс подсветки, чтобы не трогать DOM вручную */
             className={[
               styles.card,
-              safeActiveIndex === index ? styles.cardActive : styles.cardDim,
+              isActiveCard ? styles.cardActive : styles.cardDim,
             ].join(" ")}
             role="listitem"
-            aria-current={safeActiveIndex === index ? "true" : undefined}
+            aria-current={isActiveCard ? "true" : undefined}
             ref={(node) => {
               if (node) {
                 cardRefs.current[index] = node;

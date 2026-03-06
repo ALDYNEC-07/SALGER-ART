@@ -105,6 +105,32 @@
   gap: 0.35rem;
 }
 
+.storyLine {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.storyBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.52rem;
+  border-radius: 999px;
+  border: 1px solid rgba(38, 29, 20, 0.24);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(33, 25, 18, 0.78);
+}
+
+.storyProgress {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(49, 38, 27, 0.66);
+}
+
 .title {
   margin: 0;
   font-size: clamp(1.12rem, 1.4vw, 1.34rem);
@@ -290,5 +316,9 @@
   .cardActive .imagePlaceholder,
   .cardActive .image {
     animation: none;
+  }
+
+  .storyLine {
+    display: none;
   }
 }

@@ -8,17 +8,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { SeriesCarouselItem } from "../SeriesCarousel/SeriesCarousel";
+import {
+  formatProgressValue,
+  getActLabelByIndex,
+} from "../seriesStory/seriesStoryActs";
 import styles from "./SeriesCuratedHall.module.css";
 
 type SeriesCuratedHallProps = {
   items: SeriesCarouselItem[];
   ariaLabel: string;
 };
-
-/* Храним названия трёх актов, чтобы одна и та же шкала использовалась во всём блоке */
-const ACT_LABELS = ["Пролог", "Перелом", "Эхо"] as const;
-
-type ActLabel = (typeof ACT_LABELS)[number];
 
 /* Приводим индекс к безопасному диапазону, чтобы интерфейс не ломался при пустых данных */
 const getSafeIndex = (index: number, length: number): number => {
@@ -28,29 +27,6 @@ const getSafeIndex = (index: number, length: number): number => {
   return Math.max(0, Math.min(index, length - 1));
 };
 
-/* Определяем акт по месту работы в общем порядке, чтобы деление работало при любом количестве */
-const getActLabelByIndex = (index: number, length: number): ActLabel => {
-  if (length <= 1) {
-    return ACT_LABELS[0];
-  }
-
-  const progress = index / (length - 1);
-
-  if (progress < 1 / 3) {
-    return ACT_LABELS[0];
-  }
-
-  if (progress < 2 / 3) {
-    return ACT_LABELS[1];
-  }
-
-  return ACT_LABELS[2];
-};
-
-/* Приводим номер к виду «07», чтобы прогресс читался одинаково */
-const formatProgressValue = (value: number): string => {
-  return String(value).padStart(2, "0");
-};
 
 export function SeriesCuratedHall({ items, ariaLabel }: SeriesCuratedHallProps) {
   /* Запоминаем номер выбранной работы, чтобы показывать её в большом формате */

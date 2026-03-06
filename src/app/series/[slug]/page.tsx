@@ -194,6 +194,8 @@ export default async function SeriesDetailPage({ params }: SeriesPageProps) {
                 items={carouselItems}
                 ariaLabel={`Работы серии «${seriesTitle}»`}
                 metaTone="series"
+                /* Для мобильной ленты включаем только акт и прогресс у текущей карточки */
+                showStoryProgressOnMobile
               />
             </div>
 
